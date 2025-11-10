@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod/v4";
 import { authClient } from "@/lib/auth-client";
@@ -22,8 +21,10 @@ export const useSignIn = () => {
 				email,
 				password,
 				name,
-				callbackURL: "/",
 			});
+		},
+		onSuccess() {
+			throw redirect({ to: "/signup" });
 		},
 	});
 };
@@ -32,7 +33,7 @@ export const Route = createFileRoute("/signup")({
 	component: Signup,
 	beforeLoad: async () => {
 		const session = await authClient.getSession();
-		if (session) {
+		if (session?.data?.user) {
 			throw redirect({ to: "/" });
 		}
 	},
@@ -52,13 +53,8 @@ export default function Signup() {
 	} = useForm({
 		resolver: zodResolver(signupSchema),
 	});
-	const { mutate: signIn, isSuccess } = useSignIn();
 
-	useEffect(() => {
-		if (isSuccess) {
-			throw redirect({ to: "/" });
-		}
-	}, [isSuccess]);
+	const { mutate: signIn } = useSignIn();
 
 	const onSubmit = handleSubmit((data) => {
 		signIn({ ...data });
@@ -91,7 +87,7 @@ export default function Signup() {
 						className="input"
 						required
 					/>
-					{errors?.password && (
+					{errors?.password?.message && (
 						<div className="text-error py-3 px-1">{errors.password.message}</div>
 					)}
 					<button type="submit" className="w-full btn btn-primary">
