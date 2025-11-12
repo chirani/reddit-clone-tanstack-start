@@ -1,51 +1,44 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
-import z from "zod/v4";
-import { useSignUp } from "@/hooks/auth";
+import z from "zod";
+import { useSignIn } from "@/hooks/auth";
 
-export const Route = createFileRoute("/signup")({
-	component: Signup,
+export const Route = createFileRoute("/signin")({
+	component: RouteComponent,
 	beforeLoad: ({ context }) => {
 		const { userSession } = context;
 
-		if (userSession?.user) {
+		if (userSession) {
 			throw redirect({ to: "/" });
 		}
 	},
 });
 
-const signupSchema = z.object({
-	name: z.string().min(3, "Name too short"),
+const loginSchema = z.object({
 	email: z.email(),
 	password: z.string().min(8, " password must be 8 characters or longer"),
 });
 
-export default function Signup() {
+function RouteComponent() {
 	const {
 		register,
 		handleSubmit,
 		formState: { errors },
 	} = useForm({
-		resolver: zodResolver(signupSchema),
+		resolver: zodResolver(loginSchema),
 	});
-
-	const { mutate: signUp } = useSignUp();
+	const { mutate: signIn } = useSignIn();
 
 	const onSubmit = handleSubmit((data) => {
-		signUp({ ...data });
+		signIn({ ...data });
 	});
 
 	return (
-		<main className="my-16">
+		<main className="main">
 			<form onSubmit={onSubmit} className="mx-auto card w-96 bg-base-100 card-lg shadow-sm">
 				<div className="card-body gap-3">
-					<h2 className="card-title">Sign Up</h2>
-
-					<input type="text" {...register("name")} placeholder="Name" className="input" required />
-					{errors?.name?.message && (
-						<div className="text-error py-3 px-1">{errors.name.message}</div>
-					)}
+					<h2 className="card-title">Sign In</h2>
 					<input
 						type="email"
 						{...register("email")}
@@ -64,10 +57,10 @@ export default function Signup() {
 						required
 					/>
 					{errors?.password?.message && (
-						<div className="text-error py-3 px-1">{errors.password.message}</div>
+						<div className="text-error px-1">{errors.password.message}</div>
 					)}
 					<button type="submit" className="w-full btn btn-primary">
-						Sign Up
+						Sign In
 					</button>
 				</div>
 			</form>

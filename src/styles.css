@@ -3,6 +3,15 @@
   themes: light --default, dark --prefersdark, cupcake;
 }
 
-.input , .text-area {
-    @apply w-full
+:root,body {
+  @apply min-w-full min-h-full bg-zinc-50
 }
+
+.main {
+  @apply mx-4 my-6 md:mx-auto max-w-[1200px] 
+}
+
+.input , .text-area, textarea {
+  @apply w-full
+}
+

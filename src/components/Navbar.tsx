@@ -1,57 +1,48 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { redirect } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import type React from "react";
-import { authClient } from "@/lib/auth-client";
-
-export const useSession = () => {
-	return useQuery({
-		queryKey: ["session"],
-		queryFn: async () => {
-			const session = await authClient.getSession();
-			return session;
-		},
-	});
-};
-
-export const useSignOut = () => {
-	return useMutation({
-		mutationFn: async () => {
-			const session = await authClient.getSession();
-
-			if (session === null) {
-				return;
-			}
-			await authClient.signOut();
-		},
-		onSuccess: () => {
-			throw redirect({ to: "/signup" });
-		},
-	});
-};
+import { useAuthQuery, useSignOut } from "@/hooks/auth";
 
 const Navbar: React.FC = () => {
-	const { data } = useSession();
+	const { data } = useAuthQuery();
 	const { mutate: signOut } = useSignOut();
-	const isLogged = !!data?.data?.user;
+
+	const isAuthenticated = !!data?.user;
+
 	return (
 		<div className="navbar bg-base-100 shadow-sm">
 			<div className="navbar-start">
-				<button type="button" className="btn btn-ghost text-xl">
-					daisyUI
-				</button>
+				<Link to="/">
+					<button type="button" className="btn btn-ghost text-xl">
+						daisyUI
+					</button>
+				</Link>
 			</div>
 
-			<div className="navbar-end">
-				{isLogged && (
+			<div className="navbar-end gap-3">
+				{isAuthenticated && (
 					<button
 						type="button"
-						className="btn"
+						className="btn btn-outline btn-neutral"
 						onMouseDown={() => {
 							signOut();
 						}}
 					>
 						Log out
 					</button>
+				)}
+				{!isAuthenticated && (
+					<>
+						<Link to="/signup">
+							<button type="button" className="btn">
+								Signup
+							</button>
+						</Link>
+						<Link to="/signin">
+							<button type="button" className="btn btn-accent">
+								Login
+							</button>
+						</Link>
+					</>
 				)}
 			</div>
 		</div>
