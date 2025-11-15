@@ -1,5 +1,7 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useId } from "react";
+import { useForm } from "react-hook-form";
+import { postSchema, useCreatePost } from "@/hooks/post";
 
 export const Route = createFileRoute("/post/create")({
 	component: RouteComponent,
@@ -13,15 +15,27 @@ export const Route = createFileRoute("/post/create")({
 });
 
 function RouteComponent() {
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm({
+		resolver: zodResolver(postSchema),
+	});
+	const { mutate: createPost, isPending } = useCreatePost();
+
+	const onSubmit = handleSubmit((data) => {
+		createPost({ ...data });
+	});
 	return (
 		<main className="main p-3 items-center">
 			<div className="card">
-				<form className="card-body gap-3 w-96 md:w-[600px] mx-auto">
+				<form className="card-body gap-3 w-96 md:w-[600px] mx-auto" onSubmit={onSubmit}>
 					<h1 className="card-title">What are you think today?</h1>
-					<input className="input" placeholder="Post Title" type="text" />
-					<textarea className="textarea" placeholder="Body" name="post" id={useId()}></textarea>
-					<button type="button" className="btn btn-neutral">
-						Publish
+					<input className="input" placeholder="Post Title" type="text" {...register("title")} />
+					<textarea className="textarea" placeholder="Body" {...register("body")} />
+					<button type="submit" className="btn btn-neutral" disabled={isPending}>
+						{!isPending ? "Publish" : "Pending..."}
 					</button>
 				</form>
 			</div>

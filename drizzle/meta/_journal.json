@@ -8,6 +8,27 @@
       "when": 1762604196149,
       "tag": "0000_majestic_warstar",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1763206686081,
+      "tag": "0001_windy_darkstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1763206716405,
+      "tag": "0002_broken_magdalene",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1763210020975,
+      "tag": "0003_curly_steel_serpent",
+      "breakpoints": true
     }
   ]
 }

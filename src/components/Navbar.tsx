@@ -20,15 +20,22 @@ const Navbar: React.FC = () => {
 
 			<div className="navbar-end gap-3">
 				{isAuthenticated && (
-					<button
-						type="button"
-						className="btn btn-outline btn-neutral"
-						onMouseDown={() => {
-							signOut();
-						}}
-					>
-						Log out
-					</button>
+					<>
+						<Link to="/post/create" className="bg-red-100">
+							<button type="button" className="btn btn-primary w-full">
+								Create A Post
+							</button>
+						</Link>
+						<button
+							type="button"
+							className="btn btn-outline btn-neutral"
+							onMouseDown={() => {
+								signOut();
+							}}
+						>
+							Log out
+						</button>
+					</>
 				)}
 				{!isAuthenticated && (
 					<>
