@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import z from "zod";
 import { db } from "@/db";
@@ -18,6 +18,12 @@ export const createPostServer = createServerFn({ method: "POST" })
 		return results;
 	});
 
+export const fetchPostsServer = createServerFn().handler(async () => {
+	const results = await db.select().from(posts).limit(10);
+
+	return results;
+});
+
 export const useCreatePost = () => {
 	return useMutation({
 		mutationKey: ["create-post"],
@@ -26,4 +32,17 @@ export const useCreatePost = () => {
 			return results[0];
 		},
 	});
+};
+
+export const fetchPostQueryOptions = () =>
+	queryOptions({
+		queryKey: ["fetch-posts"],
+		queryFn: async () => {
+			const results = await fetchPostsServer();
+			return results;
+		},
+	});
+
+export const useFetchPost = () => {
+	return useQuery(fetchPostQueryOptions());
 };

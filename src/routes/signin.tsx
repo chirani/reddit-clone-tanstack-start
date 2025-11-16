@@ -28,7 +28,7 @@ function RouteComponent() {
 	} = useForm({
 		resolver: zodResolver(loginSchema),
 	});
-	const { mutate: signIn } = useSignIn();
+	const { mutate: signIn, isPending } = useSignIn();
 
 	const onSubmit = handleSubmit((data) => {
 		signIn({ ...data });
@@ -59,8 +59,8 @@ function RouteComponent() {
 					{errors?.password?.message && (
 						<div className="text-error px-1">{errors.password.message}</div>
 					)}
-					<button type="submit" className="w-full btn btn-primary">
-						Sign In
+					<button type="submit" className="w-full btn btn-primary" disabled={isPending}>
+						{!isPending ? "Login" : "Pending..."}
 					</button>
 				</div>
 			</form>

@@ -18,7 +18,7 @@ function RouteComponent() {
 	const {
 		register,
 		handleSubmit,
-		formState: { errors },
+		//	formState: { errors },
 	} = useForm({
 		resolver: zodResolver(postSchema),
 	});

@@ -1,4 +1,6 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { fetchPostQueryOptions } from "@/hooks/post";
 
 export const Route = createFileRoute("/")({
 	component: App,
@@ -7,21 +9,23 @@ export const Route = createFileRoute("/")({
 			throw redirect({ to: "/signup" });
 		}
 	},
+	loader: async ({ context }) => {
+		await context.queryClient.ensureQueryData(fetchPostQueryOptions());
+	},
 });
 
 function App() {
+	const { data: posts } = useSuspenseQuery(fetchPostQueryOptions());
+
 	return (
-		<main className="main p-3 flex flex-col items-center">
-			<div className="card card-xl border-2 bg-white">
-				<div className="card-body">
-					<div className="card-title">This Is Card Title</div>
-					<Link to="/post/create" className="w-full bg-red-100">
-						<button type="button" className="btn btn-primary w-full">
-							Create A Post
-						</button>
-					</Link>
-				</div>
-			</div>
+		<main className="main p-3 flex flex-col items-stretch">
+			{posts?.length &&
+				posts.map((post) => (
+					<div key={post.id} className="mb-4 p-3 border-b">
+						<h2 className="text-2xl font-semibold">{post.title}</h2>
+						<p className="text-lg">{post.body}</p>
+					</div>
+				))}
 		</main>
 	);
 }
