@@ -18,7 +18,7 @@ function RouteComponent() {
 	const {
 		register,
 		handleSubmit,
-		//	formState: { errors },
+		formState: { errors },
 	} = useForm({
 		resolver: zodResolver(postSchema),
 	});
@@ -32,8 +32,11 @@ function RouteComponent() {
 			<div className="card">
 				<form className="card-body gap-3 w-96 md:w-[600px] mx-auto" onSubmit={onSubmit}>
 					<h1 className="card-title">What are you think today?</h1>
+
 					<input className="input" placeholder="Post Title" type="text" {...register("title")} />
+					{errors?.title?.message && <p className="text-error px-3">{errors.title.message}</p>}
 					<textarea className="textarea" placeholder="Body" {...register("body")} />
+					{errors?.body?.message && <p className="text-error px-3">{errors.body.message}</p>}
 					<button type="submit" className="btn btn-neutral" disabled={isPending}>
 						{!isPending ? "Publish" : "Pending..."}
 					</button>

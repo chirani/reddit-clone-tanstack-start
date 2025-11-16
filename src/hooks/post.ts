@@ -6,7 +6,7 @@ import { posts } from "@/db/schema";
 
 export const postSchema = z.object({
 	title: z.string().max(255),
-	body: z.string().min(1),
+	body: z.string().min(125),
 });
 
 export const createPostServer = createServerFn({ method: "POST" })
