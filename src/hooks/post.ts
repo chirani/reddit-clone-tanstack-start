@@ -2,7 +2,7 @@ import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
 import z from "zod";
 import { db } from "@/db";
-import { posts } from "@/db/schema";
+import { generateSlug, posts } from "@/db/schema";
 
 export const postSchema = z.object({
 	title: z.string().max(255),
@@ -13,7 +13,10 @@ export const createPostServer = createServerFn({ method: "POST" })
 	.inputValidator(postSchema)
 	.handler(async ({ data }) => {
 		const { body, title } = data;
-		const results = await db.insert(posts).values({ body, title }).returning();
+		const results = await db
+			.insert(posts)
+			.values({ body, title, slug: generateSlug(title) })
+			.returning();
 
 		return results;
 	});

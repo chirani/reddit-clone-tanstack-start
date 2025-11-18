@@ -79,18 +79,16 @@ export const authQueries = {
 export const useSignOut = () => {
 	const router = useRouter();
 	const context = getContext();
+
 	return useMutation({
 		mutationFn: async () => {
-			const session = await authClient.getSession();
-
-			if (session === null) {
-				return;
-			}
 			await authClient.signOut();
 		},
-		onSuccess: () => {
-			router.invalidate();
-			context.queryClient.invalidateQueries({ queryKey: ["user"] });
+		onSuccess: async () => {
+			await Promise.all([
+				router.invalidate(),
+				context.queryClient.invalidateQueries({ queryKey: ["user"] }),
+			]);
 		},
 	});
 };

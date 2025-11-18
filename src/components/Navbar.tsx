@@ -4,17 +4,15 @@ import { useAuthQuery, useSignOut } from "@/hooks/auth";
 
 const Navbar: React.FC = () => {
 	const { data } = useAuthQuery();
-	const { mutate: signOut } = useSignOut();
+	const { mutate: signOut, isPending: isSignouPending } = useSignOut();
 
 	const isAuthenticated = !!data?.user;
 
 	return (
 		<div className="navbar bg-base-100 shadow-sm">
 			<div className="navbar-start">
-				<Link to="/">
-					<button type="button" className="btn btn-ghost text-xl">
-						daisyUI
-					</button>
+				<Link type="button" className="btn btn-ghost" to="/">
+					<img src="/jumpr.svg" alt="Icon" width="65" />
 				</Link>
 			</div>
 
@@ -27,6 +25,7 @@ const Navbar: React.FC = () => {
 							</button>
 						</Link>
 						<button
+							disabled={isSignouPending}
 							type="button"
 							className="btn btn-outline btn-neutral"
 							onMouseDown={() => {

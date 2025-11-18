@@ -33,6 +33,7 @@
     "drizzle-orm": "^0.39.0",
     "lexical": "^0.38.2",
     "lucide-react": "^0.544.0",
+    "nanoid": "^5.1.6",
     "pg": "^8.11.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
