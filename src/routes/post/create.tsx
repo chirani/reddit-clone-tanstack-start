@@ -1,7 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
-import { postSchema, useCreatePost } from "@/hooks/post";
+import { postSchema } from "@/lib/posts/api";
+import { useCreatePost } from "@/lib/posts/hooks";
 
 export const Route = createFileRoute("/post/create")({
 	component: RouteComponent,
@@ -27,6 +28,7 @@ function RouteComponent() {
 	const onSubmit = handleSubmit((data) => {
 		createPost({ ...data });
 	});
+
 	return (
 		<main className="main p-3 items-center">
 			<div className="card">
