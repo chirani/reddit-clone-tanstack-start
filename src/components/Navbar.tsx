@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type React from "react";
-import { useAuthQuery, useSignOut } from "@/hooks/auth";
+import { useAuthQuery, useSignOut } from "@/lib/auth/hooks";
 
 const Navbar: React.FC = () => {
 	const { data } = useAuthQuery();

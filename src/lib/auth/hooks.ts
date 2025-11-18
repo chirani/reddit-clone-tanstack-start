@@ -1,10 +1,11 @@
-import { queryOptions, useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { createMiddleware, createServerFn } from "@tanstack/react-start";
+import { createMiddleware } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import { getContext } from "@/integrations/tanstack-query/root-provider";
 import { auth } from "@/lib/auth";
 import { authClient } from "@/lib/auth-client";
+import { authQueries } from "./api";
 
 export const useSignIn = () => {
 	const router = useRouter();
@@ -51,6 +52,7 @@ export const useSignUp = () => {
 		},
 	});
 };
+
 export const userAuthMiddleware = createMiddleware({ type: "function" }).server(
 	async ({ next }) => {
 		const headers = getRequestHeaders();
@@ -62,30 +64,6 @@ export const userAuthMiddleware = createMiddleware({ type: "function" }).server(
 		return next({ context: { session: session.session, user: session.user } });
 	},
 );
-
-export const getUserSession = createServerFn({ method: "GET" }).handler(async () => {
-	const headers = getRequestHeaders();
-
-	if (!headers) {
-		return null;
-	}
-
-	const userSession = await auth.api.getSession({ headers });
-
-	if (!userSession) return null;
-
-	return userSession;
-});
-
-export const authQueries = {
-	all: ["auth"],
-	user: () =>
-		queryOptions({
-			queryKey: [...authQueries.all, "user"],
-			queryFn: () => getUserSession(),
-			staleTime: 5000,
-		}),
-};
 
 export const useSignOut = () => {
 	const router = useRouter();

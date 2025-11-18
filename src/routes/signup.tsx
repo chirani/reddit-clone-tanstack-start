@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import z from "zod/v4";
-import { useSignUp } from "@/hooks/auth";
+import { useSignUp } from "@/lib/auth/hooks";
 
 export const Route = createFileRoute("/signup")({
 	component: Signup,

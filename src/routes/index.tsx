@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import Post from "@/components/Post";
-import { fetchPostQueryOptions } from "@/hooks/post";
+import { fetchPostQueryOptions } from "@/lib/posts/hooks";
 
 export const Route = createFileRoute("/")({
 	component: App,
