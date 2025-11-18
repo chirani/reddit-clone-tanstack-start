@@ -1,8 +1,10 @@
-import { queryOptions, useMutation, useQuery } from "@tanstack/react-query";
+import { queryOptions, useMutation } from "@tanstack/react-query";
 import { createServerFn } from "@tanstack/react-start";
+import { eq, sql } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
-import { generateSlug, posts } from "@/db/schema";
+import { generateSlug, likes, posts } from "@/db/schema";
+import { userAuthMiddleware } from "./auth";
 
 export const postSchema = z.object({
 	title: z.string().max(255),
@@ -21,11 +23,27 @@ export const createPostServer = createServerFn({ method: "POST" })
 		return results;
 	});
 
-export const fetchPostsServer = createServerFn().handler(async () => {
-	const results = await db.select().from(posts).limit(10);
+export const fetchPostsServer = createServerFn()
+	.middleware([userAuthMiddleware])
+	.handler(async ({ context }) => {
+		const userId = context.user.id;
 
-	return results;
-});
+		const results = await db
+			.select({
+				id: posts.id,
+				title: posts.title,
+				body: posts.body,
+				createdAt: posts.createdAt,
+				likedByUser: sql<boolean>`BOOL_OR(${likes.userId} = ${userId})`,
+				likeCount: sql<number>`COUNT(${likes.postId})`,
+			})
+			.from(posts)
+			.leftJoin(likes, eq(posts.id, likes.postId))
+			.groupBy(posts.id)
+			.limit(10);
+
+		return results;
+	});
 
 export const useCreatePost = () => {
 	return useMutation({
@@ -45,7 +63,3 @@ export const fetchPostQueryOptions = () =>
 			return results;
 		},
 	});
-
-export const useFetchPost = () => {
-	return useQuery(fetchPostQueryOptions());
-};

@@ -1,6 +1,6 @@
 import { queryOptions, useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
+import { createMiddleware, createServerFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import { getContext } from "@/integrations/tanstack-query/root-provider";
 import { auth } from "@/lib/auth";
@@ -51,6 +51,17 @@ export const useSignUp = () => {
 		},
 	});
 };
+export const userAuthMiddleware = createMiddleware({ type: "function" }).server(
+	async ({ next }) => {
+		const headers = getRequestHeaders();
+		const session = await auth.api.getSession({ headers });
+
+		if (!session?.user) {
+			throw new Error("Unauthorized");
+		}
+		return next({ context: { session: session.session, user: session.user } });
+	},
+);
 
 export const getUserSession = createServerFn({ method: "GET" }).handler(async () => {
 	const headers = getRequestHeaders();
@@ -63,7 +74,7 @@ export const getUserSession = createServerFn({ method: "GET" }).handler(async ()
 
 	if (!userSession) return null;
 
-	return { user: userSession.user, session: userSession.session };
+	return userSession;
 });
 
 export const authQueries = {
