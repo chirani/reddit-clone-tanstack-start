@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
 import { generateSlug, likes, posts } from "@/db/schema";
@@ -17,6 +17,23 @@ export const createPostServer = createServerFn({ method: "POST" })
 		const results = await db
 			.insert(posts)
 			.values({ body, title, slug: generateSlug(title) })
+			.returning();
+
+		return results;
+	});
+
+export const removeLikeServer = createServerFn({ method: "POST" })
+	.inputValidator(
+		z.object({
+			postId: z.string(),
+		}),
+	)
+	.middleware([userAuthMiddleware])
+	.handler(async ({ context, data }) => {
+		const userId = context.user.id;
+		const results = await db
+			.delete(likes)
+			.where(and(eq(likes.postId, data.postId), eq(likes.userId, userId)))
 			.returning();
 
 		return results;
@@ -53,6 +70,7 @@ export const fetchPostsServer = createServerFn()
 			.from(posts)
 			.leftJoin(likes, eq(posts.id, likes.postId))
 			.groupBy(posts.id)
+			.orderBy(desc(posts.createdAt))
 			.limit(10);
 
 		return results;
