@@ -30,9 +30,9 @@ function RouteComponent() {
 	});
 
 	return (
-		<main className="main p-3 items-center">
+		<main className="main items-center">
 			<div className="card">
-				<form className="card-body gap-3 w-96 md:w-[600px] mx-auto" onSubmit={onSubmit}>
+				<form className="card-body gap-3 w-full md:w-[600px] mx-auto" onSubmit={onSubmit}>
 					<h1 className="card-title">What are you think today?</h1>
 
 					<input className="input" placeholder="Post Title" type="text" {...register("title")} />

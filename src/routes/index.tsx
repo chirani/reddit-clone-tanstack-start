@@ -19,7 +19,7 @@ function App() {
 	const { data: posts } = useSuspenseQuery(fetchPostQueryOptions());
 
 	return (
-		<main className="main p-3 flex flex-col items-stretch">
+		<main className="main flex flex-col items-stretch">
 			{posts?.length &&
 				posts.map((post) => (
 					<Post
