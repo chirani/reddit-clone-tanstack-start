@@ -20,16 +20,7 @@ function App() {
 
 	return (
 		<main className="main flex flex-col items-stretch">
-			{posts?.length &&
-				posts.map((post) => (
-					<Post
-						key={post.id}
-						id={post.id}
-						title={post.title}
-						body={post.body}
-						likeCount={post.likeCount}
-					/>
-				))}
+			{posts?.length && posts.map((post) => <Post key={post.id} {...post} />)}
 		</main>
 	);
 }

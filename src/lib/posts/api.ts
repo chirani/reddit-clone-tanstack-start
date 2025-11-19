@@ -22,6 +22,20 @@ export const createPostServer = createServerFn({ method: "POST" })
 		return results;
 	});
 
+export const addLikeServer = createServerFn({ method: "POST" })
+	.inputValidator(
+		z.object({
+			postId: z.string(),
+		}),
+	)
+	.middleware([userAuthMiddleware])
+	.handler(async ({ context, data }) => {
+		const userId = context.user.id;
+		const results = await db.insert(likes).values({ postId: data.postId, userId }).returning();
+
+		return results;
+	});
+
 export const fetchPostsServer = createServerFn()
 	.middleware([userAuthMiddleware])
 	.handler(async ({ context }) => {
@@ -33,7 +47,7 @@ export const fetchPostsServer = createServerFn()
 				title: posts.title,
 				body: posts.body,
 				createdAt: posts.createdAt,
-				likedByUser: sql<boolean>`BOOL_OR(${likes.userId} = ${userId})`,
+				likedByUser: sql<boolean>`BOOL_OR(${eq(likes.userId, userId)})`,
 				likeCount: sql<number>`COUNT(${likes.postId})`,
 			})
 			.from(posts)
