@@ -15,7 +15,7 @@ const Post = ({ id, title, body, likeCount, likedByUser }: IPost) => {
 	const toggleLike = () => (likedByUser ? unlikePost(id) : likePost(id));
 
 	return (
-		<div key={id} className="mb-0 p-6 bg-white border-b border-b-zinc-200">
+		<div className="mb-0 p-6 bg-white border-b border-b-zinc-200">
 			<h2 className="text-2xl font-semibold">{title}</h2>
 			<p className="text-lg">{body}</p>
 			<div className="flex flex-row mt-4">
