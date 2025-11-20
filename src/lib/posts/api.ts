@@ -63,6 +63,7 @@ export const fetchPostsServer = createServerFn()
 				id: posts.id,
 				title: posts.title,
 				body: posts.body,
+				slug: posts.slug,
 				createdAt: posts.createdAt,
 				likedByUser: sql<boolean>`BOOL_OR(${eq(likes.userId, userId)})`,
 				likeCount: sql<number>`COUNT(${likes.postId})`,
