@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ThumbsUp } from "lucide-react";
+import { MessageSquareText, ThumbsUp } from "lucide-react";
 import { fetchPostBySlugQueryOptions, useLikePost, useUnlikePost } from "@/lib/posts/hooks";
 
 export const Route = createFileRoute("/post/$postId")({
@@ -29,7 +29,7 @@ function RouteComponent() {
 				By <span className="text-primary">{username}</span>
 			</p>
 			<p className="text-lg mt-3">{body}</p>
-			<div className="flex flex-row px-6 py-3">
+			<div className="flex flex-row px-0 py-3 gap-3">
 				<button
 					type="button"
 					className={`btn btn-ghost rounded-full ${likedByUser ? "text-teal-500" : "text-zinc-600"}`}
@@ -38,7 +38,12 @@ function RouteComponent() {
 					{likeCount}
 					<ThumbsUp className="text-md" />
 				</button>
+				<button type="button" className="btn btn-ghost rounded-full text-zinc-600">
+					{0}
+					<MessageSquareText className="text-md" />
+				</button>
 			</div>
+			<hr className="my-4" />
 		</div>
 	);
 }

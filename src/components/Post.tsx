@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ThumbsUp } from "lucide-react";
+import { MessageSquareText, ThumbsUp } from "lucide-react";
 import { useLikePost, useUnlikePost } from "@/lib/posts/hooks";
 
 interface IPost {
@@ -24,7 +24,7 @@ const Post = ({ id, title, body, likeCount, likedByUser, slug }: IPost) => {
 					<p className="text-lg">{body}</p>
 				</div>
 			</Link>
-			<div className="flex flex-row px-6 py-3">
+			<div className="flex flex-row px-6 py-3 gap-3">
 				<button
 					type="button"
 					className={`btn btn-ghost rounded-full ${likedByUser ? "text-teal-500" : "text-zinc-600"}`}
@@ -32,6 +32,10 @@ const Post = ({ id, title, body, likeCount, likedByUser, slug }: IPost) => {
 				>
 					{likeCount}
 					<ThumbsUp className="text-md" />
+				</button>
+				<button type="button" className="btn btn-ghost rounded-full text-zinc-600">
+					{0}
+					<MessageSquareText className="text-md" />
 				</button>
 			</div>
 		</div>
