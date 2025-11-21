@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import Post from "@/components/Post";
-import { fetchPostQueryOptions } from "@/lib/posts/hooks";
+import { fetchPostsQueryOptions } from "@/lib/posts/hooks";
 
 export const Route = createFileRoute("/")({
 	component: App,
@@ -11,12 +11,12 @@ export const Route = createFileRoute("/")({
 		}
 	},
 	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(fetchPostQueryOptions());
+		await context.queryClient.ensureQueryData(fetchPostsQueryOptions());
 	},
 });
 
 function App() {
-	const { data: posts } = useSuspenseQuery(fetchPostQueryOptions());
+	const { data: posts } = useSuspenseQuery(fetchPostsQueryOptions());
 
 	return (
 		<main className="main flex flex-col items-stretch">

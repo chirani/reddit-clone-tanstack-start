@@ -1,5 +1,11 @@
 import { queryOptions, useMutation } from "@tanstack/react-query";
-import { addLikeServer, createPostServer, fetchPostsServer, removeLikeServer } from "./api";
+import {
+	addLikeServer,
+	createPostServer,
+	fetchPostBySlugServer,
+	fetchPostsServer,
+	removeLikeServer,
+} from "./api";
 
 export const useCreatePost = () => {
 	return useMutation({
@@ -11,13 +17,19 @@ export const useCreatePost = () => {
 	});
 };
 
-export const fetchPostQueryOptions = () =>
+export const fetchPostsQueryOptions = () =>
 	queryOptions({
 		queryKey: ["fetch-posts"],
 		queryFn: async () => {
 			const results = await fetchPostsServer();
 			return results;
 		},
+	});
+
+export const fetchPostBySlugQueryOptions = (slug: string) =>
+	queryOptions({
+		queryKey: ["fetch-post", slug],
+		queryFn: async () => await fetchPostBySlugServer({ data: { slug } }),
 	});
 
 export const useLikePost = () => {
