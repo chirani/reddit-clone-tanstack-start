@@ -14,7 +14,7 @@ interface IPost {
 const Post = ({ id, title, body, likeCount, likedByUser, slug }: IPost) => {
 	const { mutate: likePost } = useLikePost();
 	const { mutate: unlikePost } = useUnlikePost();
-	const toggleLike = () => (likedByUser ? unlikePost(id) : likePost(id));
+	const toggleLike = () => (likedByUser ? unlikePost({ postId: id }) : likePost({ postId: id }));
 
 	return (
 		<div className="mb-0 bg-white border-b border-b-zinc-200">

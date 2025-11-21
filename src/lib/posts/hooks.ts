@@ -34,22 +34,38 @@ export const fetchPostBySlugQueryOptions = (slug: string) =>
 
 export const useLikePost = () => {
 	return useMutation({
-		mutationFn: async (postId: string) => await addLikeServer({ data: { postId } }),
+		mutationFn: async ({ postId }: { postId: string; slug?: string }) =>
+			await addLikeServer({ data: { postId } }),
 		mutationKey: ["add-like"],
-		onMutate: async (postId, context) => {
-			await context.client.cancelQueries({ queryKey: ["fetch-posts"] });
-			type posts = Awaited<ReturnType<typeof fetchPostsServer>>;
+		onMutate: async ({ postId, slug }, context) => {
+			if (!slug) {
+				await context.client.cancelQueries({ queryKey: ["fetch-posts"] });
+				type posts = Awaited<ReturnType<typeof fetchPostsServer>>;
 
-			context.client.setQueryData(["fetch-posts"], (old: posts) =>
-				old.map((item) => {
-					if (item.id === postId && !item.likedByUser) {
-						return { ...item, likeCount: Number(item.likeCount) + 1, likedByUser: true };
-					}
-					return item;
-				}),
-			);
+				context.client.setQueryData(["fetch-posts"], (old: posts) =>
+					old.map((item) => {
+						if (item.id === postId && !item.likedByUser) {
+							return { ...item, likeCount: Number(item.likeCount) + 1, likedByUser: true };
+						}
+						return item;
+					}),
+				);
+			}
+			if (slug) {
+				type posts = Awaited<ReturnType<typeof fetchPostBySlugServer>>;
+				await context.client.cancelQueries({ queryKey: ["fetch-post", slug] });
+
+				context.client.setQueryData(["fetch-post", slug], (old: posts) =>
+					old.map((item) => {
+						if (item.id === postId && !item.likedByUser) {
+							return { ...item, likeCount: Number(item.likeCount) + 1, likedByUser: true };
+						}
+						return item;
+					}),
+				);
+			}
 		},
-		onSuccess(_data, _variables, _onMutateResult, context) {
+		onError(_data, _variables, _onMutateResult, context) {
 			context.client.invalidateQueries({ queryKey: ["fetch-posts"] });
 		},
 	});
@@ -57,20 +73,36 @@ export const useLikePost = () => {
 
 export const useUnlikePost = () => {
 	return useMutation({
-		mutationFn: async (postId: string) => await removeLikeServer({ data: { postId } }),
+		mutationFn: async ({ postId }: { postId: string; slug?: string }) =>
+			await removeLikeServer({ data: { postId } }),
 		mutationKey: ["remove-like"],
-		onMutate: async (postId, context) => {
-			await context.client.cancelQueries({ queryKey: ["fetch-posts"] });
-			type posts = Awaited<ReturnType<typeof fetchPostsServer>>;
+		onMutate: async ({ postId, slug }, context) => {
+			if (!slug) {
+				await context.client.cancelQueries({ queryKey: ["fetch-posts"] });
+				type posts = Awaited<ReturnType<typeof fetchPostsServer>>;
 
-			context.client.setQueryData(["fetch-posts"], (old: posts) =>
-				old.map((item) => {
-					if (item.id === postId && item.likedByUser) {
-						return { ...item, likeCount: Number(item.likeCount) - 1, likedByUser: false };
-					}
-					return item;
-				}),
-			);
+				context.client.setQueryData(["fetch-posts"], (old: posts) =>
+					old.map((item) => {
+						if (item.id === postId && item.likedByUser) {
+							return { ...item, likeCount: Number(item.likeCount) - 1, likedByUser: false };
+						}
+						return item;
+					}),
+				);
+			}
+			if (slug) {
+				type posts = Awaited<ReturnType<typeof fetchPostBySlugServer>>;
+				await context.client.cancelQueries({ queryKey: ["fetch-post"] });
+
+				context.client.setQueryData(["fetch-post", slug], (old: posts) =>
+					old.map((item) => {
+						if (item.id === postId && item.likedByUser) {
+							return { ...item, likeCount: Number(item.likeCount) - 1, likedByUser: false };
+						}
+						return item;
+					}),
+				);
+			}
 		},
 		onError(_data, _variables, _onMutateResult, context) {
 			context.client.invalidateQueries({ queryKey: ["fetch-posts"] });
