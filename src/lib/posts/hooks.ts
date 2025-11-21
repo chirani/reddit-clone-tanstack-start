@@ -50,20 +50,20 @@ export const useLikePost = () => {
 						return item;
 					}),
 				);
+				return;
 			}
-			if (slug) {
-				type posts = Awaited<ReturnType<typeof fetchPostBySlugServer>>;
-				await context.client.cancelQueries({ queryKey: ["fetch-post", slug] });
 
-				context.client.setQueryData(["fetch-post", slug], (old: posts) =>
-					old.map((item) => {
-						if (item.id === postId && !item.likedByUser) {
-							return { ...item, likeCount: Number(item.likeCount) + 1, likedByUser: true };
-						}
-						return item;
-					}),
-				);
-			}
+			type posts = Awaited<ReturnType<typeof fetchPostBySlugServer>>;
+			await context.client.cancelQueries({ queryKey: ["fetch-post", slug] });
+
+			context.client.setQueryData(["fetch-post", slug], (old: posts) =>
+				old.map((item) => {
+					if (item.id === postId && !item.likedByUser) {
+						return { ...item, likeCount: Number(item.likeCount) + 1, likedByUser: true };
+					}
+					return item;
+				}),
+			);
 		},
 		onError(_data, _variables, _onMutateResult, context) {
 			context.client.invalidateQueries({ queryKey: ["fetch-posts"] });
@@ -89,23 +89,26 @@ export const useUnlikePost = () => {
 						return item;
 					}),
 				);
+				return;
 			}
-			if (slug) {
-				type posts = Awaited<ReturnType<typeof fetchPostBySlugServer>>;
-				await context.client.cancelQueries({ queryKey: ["fetch-post"] });
 
-				context.client.setQueryData(["fetch-post", slug], (old: posts) =>
-					old.map((item) => {
-						if (item.id === postId && item.likedByUser) {
-							return { ...item, likeCount: Number(item.likeCount) - 1, likedByUser: false };
-						}
-						return item;
-					}),
-				);
-			}
+			type posts = Awaited<ReturnType<typeof fetchPostBySlugServer>>;
+			await context.client.cancelQueries({ queryKey: ["fetch-post"] });
+
+			context.client.setQueryData(["fetch-post", slug], (old: posts) =>
+				old.map((item) => {
+					if (item.id === postId && item.likedByUser) {
+						return { ...item, likeCount: Number(item.likeCount) - 1, likedByUser: false };
+					}
+					return item;
+				}),
+			);
 		},
-		onError(_data, _variables, _onMutateResult, context) {
+		onError(_data, { slug }, _onMutateResult, context) {
 			context.client.invalidateQueries({ queryKey: ["fetch-posts"] });
+			if (slug) {
+				context.client.invalidateQueries({ queryKey: ["fetch-post", slug] });
+			}
 		},
 	});
 };
