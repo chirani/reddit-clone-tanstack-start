@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { MessageSquareText, ThumbsUp } from "lucide-react";
+import CommentInput from "@/components/CommentInput";
 import { fetchPostBySlugQueryOptions, useLikePost, useUnlikePost } from "@/lib/posts/hooks";
 
 export const Route = createFileRoute("/post/$postId")({
@@ -44,6 +45,7 @@ function RouteComponent() {
 				</button>
 			</div>
 			<hr className="my-4" />
+			<CommentInput id={postId} />
 		</div>
 	);
 }
