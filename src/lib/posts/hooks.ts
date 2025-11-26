@@ -2,8 +2,10 @@ import { queryOptions, useMutation } from "@tanstack/react-query";
 import {
 	addLikeServer,
 	createPostServer,
+	deleteComment,
 	fetchPostBySlugServer,
 	fetchPostsServer,
+	postComment,
 	removeLikeServer,
 } from "./api";
 
@@ -110,5 +112,21 @@ export const useUnlikePost = () => {
 				context.client.invalidateQueries({ queryKey: ["fetch-post", slug] });
 			}
 		},
+	});
+};
+
+export const usePostComment = () => {
+	return useMutation({
+		mutationKey: ["post-comment"],
+		mutationFn: async ({ postId, comment }: { postId: string; comment: string }) =>
+			await postComment({ data: { postId, comment } }),
+	});
+};
+
+export const useRemoveComment = () => {
+	return useMutation({
+		mutationKey: ["post-comment"],
+		mutationFn: async ({ commentId }: { commentId: string }) =>
+			await deleteComment({ data: { commentId } }),
 	});
 };

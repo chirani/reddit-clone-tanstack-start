@@ -3,7 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { and, desc, eq, sql } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
-import { generateSlug, likes, posts, user } from "@/db/schema";
+import { comments, generateSlug, likes, posts, user } from "@/db/schema";
 import { userAuthMiddleware } from "@/lib/auth/hooks";
 
 export const postSchema = z.object({
@@ -52,6 +52,41 @@ export const addLikeServer = createServerFn({ method: "POST" })
 	.handler(async ({ context, data }) => {
 		const userId = context.user.id;
 		const results = await db.insert(likes).values({ postId: data.postId, userId }).returning();
+
+		return results;
+	});
+
+export const postComment = createServerFn({ method: "POST" })
+	.middleware([userAuthMiddleware])
+	.inputValidator(
+		z.object({
+			postId: z.string(),
+			comment: z.string(),
+		}),
+	)
+	.handler(async ({ context, data }) => {
+		const userId = context.user.id;
+		const { postId, comment } = data;
+		const results = await db.insert(comments).values({ postId, comment, userId }).returning();
+
+		return results;
+	});
+
+export const deleteComment = createServerFn({ method: "POST" })
+	.middleware([userAuthMiddleware])
+	.inputValidator(
+		z.object({
+			commentId: z.string(),
+		}),
+	)
+	.handler(async ({ context, data }) => {
+		const userId = context.user.id;
+		const { commentId } = data;
+		const results = await db
+			.update(comments)
+			.set({ deletedAt: new Date() })
+			.where(and(eq(comments.id, commentId), eq(comments.userId, userId)))
+			.returning();
 
 		return results;
 	});
