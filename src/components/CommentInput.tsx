@@ -35,18 +35,23 @@ const CommentInput: React.FC<ICommentInput> = () => {
 					toggleHidden(true);
 				}}
 				htmlFor="comment"
-				className="input md:input-xl rounded-full"
+				className="input md:input-lg rounded-full"
 				hidden={commentHidden}
 			>
 				<MessageSquareText className="text-md mx-3" />
 				<p className="opacity-50">Green Eggs and Ham</p>
 			</label>
-			<input
-				className="input input-lg"
+			<textarea
+				className="textarea"
 				placeholder="Write Comment..."
-				{...register("comment")}
 				hidden={!commentHidden}
+				{...register("comment")}
 			/>
+			<div className="flex flex-row-reverse py-3 gap-3" hidden={!commentHidden}>
+				<button title="Post Comment" type="submit" className="btn btn-neutral">
+					Post Comment
+				</button>
+			</div>
 		</form>
 	);
 };
