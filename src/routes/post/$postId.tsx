@@ -45,7 +45,7 @@ function RouteComponent() {
 				</button>
 			</div>
 			<hr className="my-4" />
-			<CommentInput id={postId} />
+			<CommentInput postId={id} />
 		</div>
 	);
 }

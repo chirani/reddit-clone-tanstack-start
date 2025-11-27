@@ -4,15 +4,17 @@ import type React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { usePostComment } from "@/lib/posts/hooks";
 
 const commentSchema = z.object({
 	comment: z.string(),
 });
 interface ICommentInput {
-	id: string;
+	postId: string;
 }
-const CommentInput: React.FC<ICommentInput> = () => {
+const CommentInput: React.FC<ICommentInput> = (props) => {
 	const [commentHidden, toggleHidden] = useState<boolean>(false);
+	const { mutate: postComment } = usePostComment();
 	const {
 		register,
 		handleSubmit,
@@ -24,6 +26,7 @@ const CommentInput: React.FC<ICommentInput> = () => {
 	});
 	const onSubmit = handleSubmit((data) => {
 		console.log(data);
+		postComment({ comment: data.comment.trim(), postId: props.postId });
 		reset();
 	});
 
