@@ -115,6 +115,37 @@ export const fetchPostsServer = createServerFn()
 		return results;
 	});
 
+export const fetchPostsPaginatedServer = createServerFn()
+	.inputValidator(
+		z.object({
+			limit: z.number().default(10),
+			offset: z.number().default(0),
+		}),
+	)
+	.middleware([userAuthMiddleware])
+	.handler(async ({ context, data }) => {
+		const userId = context.user.id;
+		const { limit, offset } = data;
+		const results = await db
+			.select({
+				id: posts.id,
+				title: posts.title,
+				body: posts.body,
+				slug: posts.slug,
+				createdAt: posts.createdAt,
+				likedByUser: sql<boolean>`BOOL_OR(${eq(likes.userId, userId)})`,
+				likeCount: sql<number>`COUNT(${likes.postId})`,
+			})
+			.from(posts)
+			.leftJoin(likes, eq(posts.id, likes.postId))
+			.groupBy(posts.id)
+			.orderBy(desc(posts.createdAt))
+			.limit(limit)
+			.offset(offset);
+
+		return { results, nextOffset: results.length === limit ? offset + limit : null };
+	});
+
 export const fetchPostBySlugServer = createServerFn()
 	.inputValidator(
 		z.object({

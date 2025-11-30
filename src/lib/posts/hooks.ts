@@ -1,9 +1,11 @@
-import { queryOptions, useMutation } from "@tanstack/react-query";
+import type { InfiniteData } from "@tanstack/react-query";
+import { infiniteQueryOptions, queryOptions, useMutation } from "@tanstack/react-query";
 import {
 	addLikeServer,
 	createPostServer,
 	deleteComment,
 	fetchPostBySlugServer,
+	fetchPostsPaginatedServer,
 	fetchPostsServer,
 	postComment,
 	removeLikeServer,
@@ -28,6 +30,16 @@ export const fetchPostsQueryOptions = () =>
 		},
 	});
 
+export const fetchPostsPagintedQueryOptions = () =>
+	infiniteQueryOptions({
+		initialPageParam: 0,
+		queryKey: ["fetch-posts-paginated"],
+		queryFn: async ({ pageParam }) => {
+			const results = await fetchPostsPaginatedServer({ data: { offset: pageParam } });
+			return results;
+		},
+		getNextPageParam: (lastPage) => lastPage.nextOffset,
+	});
 export const fetchPostBySlugQueryOptions = (slug: string) =>
 	queryOptions({
 		queryKey: ["fetch-post", slug],
@@ -41,17 +53,24 @@ export const useLikePost = () => {
 		mutationKey: ["add-like"],
 		onMutate: async ({ postId, slug }, context) => {
 			if (!slug) {
-				await context.client.cancelQueries({ queryKey: ["fetch-posts"] });
-				type posts = Awaited<ReturnType<typeof fetchPostsServer>>;
+				await context.client.cancelQueries({ queryKey: ["fetch-posts-paginated"] });
+				type posts = Awaited<ReturnType<typeof fetchPostsPaginatedServer>>;
 
-				context.client.setQueryData(["fetch-posts"], (old: posts) =>
-					old.map((item) => {
-						if (item.id === postId && !item.likedByUser) {
-							return { ...item, likeCount: Number(item.likeCount) + 1, likedByUser: true };
-						}
-						return item;
-					}),
-				);
+				context.client.setQueryData<InfiniteData<posts>>(["fetch-posts-paginated"], (old) => {
+					if (!old) return old;
+
+					const newPages = old.pages.map((page) => ({
+						...page,
+						results: page.results.map((item) => {
+							if (item.id === postId && !item.likedByUser) {
+								return { ...item, likeCount: Number(item.likeCount) + 1, likedByUser: true };
+							}
+							return item;
+						}),
+					}));
+
+					return { ...old, pages: newPages };
+				});
 				return;
 			}
 
@@ -80,17 +99,24 @@ export const useUnlikePost = () => {
 		mutationKey: ["remove-like"],
 		onMutate: async ({ postId, slug }, context) => {
 			if (!slug) {
-				await context.client.cancelQueries({ queryKey: ["fetch-posts"] });
-				type posts = Awaited<ReturnType<typeof fetchPostsServer>>;
+				await context.client.cancelQueries({ queryKey: ["fetch-posts-paginated"] });
+				type Posts = Awaited<ReturnType<typeof fetchPostsPaginatedServer>>;
 
-				context.client.setQueryData(["fetch-posts"], (old: posts) =>
-					old.map((item) => {
-						if (item.id === postId && item.likedByUser) {
-							return { ...item, likeCount: Number(item.likeCount) - 1, likedByUser: false };
-						}
-						return item;
-					}),
-				);
+				context.client.setQueryData<InfiniteData<Posts>>(["fetch-posts-paginated"], (old) => {
+					if (!old) return old;
+
+					const newPages = old.pages.map((page) => ({
+						...page,
+						results: page.results.map((item) => {
+							if (item.id === postId && item.likedByUser) {
+								return { ...item, likeCount: Number(item.likeCount) - 1, likedByUser: false };
+							}
+							return item;
+						}),
+					}));
+
+					return { ...old, pages: newPages };
+				});
 				return;
 			}
 

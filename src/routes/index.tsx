@@ -1,7 +1,7 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import Post from "@/components/Post";
-import { fetchPostsQueryOptions } from "@/lib/posts/hooks";
+import { fetchPostsPagintedQueryOptions } from "@/lib/posts/hooks";
 
 export const Route = createFileRoute("/")({
 	component: App,
@@ -11,12 +11,13 @@ export const Route = createFileRoute("/")({
 		}
 	},
 	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(fetchPostsQueryOptions());
+		await context.queryClient.ensureInfiniteQueryData(fetchPostsPagintedQueryOptions());
 	},
 });
 
 function App() {
-	const { data: posts } = useSuspenseQuery(fetchPostsQueryOptions());
+	const { data } = useSuspenseInfiniteQuery(fetchPostsPagintedQueryOptions());
+	const posts = data?.pages.flatMap((p) => p.results) ?? [];
 
 	return (
 		<main className="main flex flex-col items-stretch">
