@@ -35,11 +35,12 @@ export const fetchPostsPagintedQueryOptions = () =>
 		initialPageParam: 0,
 		queryKey: ["fetch-posts-paginated"],
 		queryFn: async ({ pageParam }) => {
-			const results = await fetchPostsPaginatedServer({ data: { offset: pageParam } });
+			const results = await fetchPostsPaginatedServer({ data: { offset: pageParam, limit: 3 } });
 			return results;
 		},
 		getNextPageParam: (lastPage) => lastPage.nextOffset,
 	});
+
 export const fetchPostBySlugQueryOptions = (slug: string) =>
 	queryOptions({
 		queryKey: ["fetch-post", slug],
@@ -104,7 +105,6 @@ export const useUnlikePost = () => {
 
 				context.client.setQueryData<InfiniteData<Posts>>(["fetch-posts-paginated"], (old) => {
 					if (!old) return old;
-
 					const newPages = old.pages.map((page) => ({
 						...page,
 						results: page.results.map((item) => {

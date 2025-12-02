@@ -43,6 +43,13 @@
       "when": 1764159873644,
       "tag": "0005_sweet_the_hood",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1764534452368,
+      "tag": "0006_brave_guardsmen",
+      "breakpoints": true
     }
   ]
 }

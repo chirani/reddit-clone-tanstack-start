@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
 import { pgTable, primaryKey, text, timestamp } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
-import { account, session, user, verification } from "../../auth-schema";
+import { account, session, user, verification } from "../../auth-schema.ts";
 
 export { account, session, user, verification };
 
@@ -29,8 +29,8 @@ export const posts = pgTable("posts", {
 export const likes = pgTable(
 	"likes",
 	{
-		userId: text("user_id").references(() => user.id),
-		postId: text("post_id").references(() => posts.id),
+		userId: text("user_id").references(() => user.id, { onDelete: "cascade" }),
+		postId: text("post_id").references(() => posts.id, { onDelete: "cascade" }),
 		createdAt: timestamp("created_at").defaultNow(),
 	},
 	(table) => [primaryKey({ columns: [table.postId, table.userId] })],

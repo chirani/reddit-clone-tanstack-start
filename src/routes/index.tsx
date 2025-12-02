@@ -16,12 +16,22 @@ export const Route = createFileRoute("/")({
 });
 
 function App() {
-	const { data } = useSuspenseInfiniteQuery(fetchPostsPagintedQueryOptions());
+	const { data, fetchNextPage, isFetching, hasNextPage } = useSuspenseInfiniteQuery(
+		fetchPostsPagintedQueryOptions(),
+	);
 	const posts = data?.pages.flatMap((p) => p.results) ?? [];
 
 	return (
 		<main className="main flex flex-col items-stretch">
 			{posts?.length && posts.map((post) => <Post key={post.id} {...post} />)}
+			<button
+				hidden={!hasNextPage || isFetching}
+				type="button"
+				onFocus={() => {}}
+				onMouseOver={() => fetchNextPage()}
+			>
+				See More
+			</button>
 		</main>
 	);
 }
