@@ -3,12 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { MessageSquareText, ThumbsUp } from "lucide-react";
 import Comment from "@/components/Comment";
 import CommentInput from "@/components/CommentInput";
-import {
-	fetchPostBySlugQueryOptions,
-	fetchPostCommentsQueryOpts,
-	useLikePost,
-	useUnlikePost,
-} from "@/lib/posts/hooks";
+import { fetchPostCommentsQueryOpts } from "@/lib/comments/hooks";
+import { fetchPostBySlugQueryOptions, useLikePost, useUnlikePost } from "@/lib/posts/hooks";
 
 export const Route = createFileRoute("/post/$postId")({
 	component: RouteComponent,

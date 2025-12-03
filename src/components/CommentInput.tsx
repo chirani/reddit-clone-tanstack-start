@@ -4,7 +4,7 @@ import type React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import { usePostComment } from "@/lib/posts/hooks";
+import { usePostComment } from "@/lib/comments/hooks";
 
 const commentSchema = z.object({
 	comment: z.string().min(1),

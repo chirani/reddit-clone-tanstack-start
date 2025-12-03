@@ -12,7 +12,7 @@ export function generateSlug(text: string) {
 		.replace(/[^a-z0-9]+/g, "-") // replace non-alphanumerics with dash
 		.replace(/^-+|-+$/g, ""); // remove starting/ending dashes
 
-	const id = nanoid(6); // short unique ID
+	const id = nanoid(8); // short unique ID
 
 	return `${base}-${id}`;
 }
