@@ -4,8 +4,8 @@
 }
 
 :root,body {
-  @apply min-w-full min-h-full bg-zinc-50
-}
+/* @apply min-w-full min-h-full bg-base-100
+*/}
 
 .main {
   @apply my-6 md:mx-auto max-w-[1200px] 

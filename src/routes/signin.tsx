@@ -41,20 +41,20 @@ function RouteComponent() {
 					<h2 className="card-title">Sign In</h2>
 					<input
 						type="email"
-						{...register("email")}
 						placeholder="Email"
 						className="input"
 						required
+						{...register("email")}
 					/>
 					{errors?.email?.message && (
 						<div className="text-error py-3 px-1">{errors.email.message}</div>
 					)}
 					<input
 						type="password"
-						{...register("password")}
 						placeholder="Password"
 						className="input"
 						required
+						{...register("password")}
 					/>
 					{errors?.password?.message && (
 						<div className="text-error px-1">{errors.password.message}</div>

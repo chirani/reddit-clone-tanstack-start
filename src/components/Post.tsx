@@ -27,7 +27,7 @@ const Post = ({ id, title, body, likeCount, likedByUser, slug }: IPost) => {
 			<div className="flex flex-row px-6 py-3 gap-3">
 				<button
 					type="button"
-					className={`btn btn-ghost rounded-full ${likedByUser ? "text-teal-500" : "text-zinc-600"}`}
+					className={`btn btn-ghost rounded-full ${likedByUser ? "text-blue-500" : "text-zinc-600"}`}
 					onClick={toggleLike}
 				>
 					{likeCount}

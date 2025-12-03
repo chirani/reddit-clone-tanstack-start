@@ -1,14 +1,21 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { MessageSquareText, ThumbsUp } from "lucide-react";
+import Comment from "@/components/Comment";
 import CommentInput from "@/components/CommentInput";
-import { fetchPostBySlugQueryOptions, useLikePost, useUnlikePost } from "@/lib/posts/hooks";
+import {
+	fetchPostBySlugQueryOptions,
+	fetchPostCommentsQueryOpts,
+	useLikePost,
+	useUnlikePost,
+} from "@/lib/posts/hooks";
 
 export const Route = createFileRoute("/post/$postId")({
 	component: RouteComponent,
 	loader: async ({ context, params }) => {
 		const { postId } = params;
 		await context.queryClient.ensureQueryData(fetchPostBySlugQueryOptions(postId));
+		await context.queryClient.ensureInfiniteQueryData(fetchPostCommentsQueryOpts(postId));
 	},
 	notFoundComponent: NotFoundComponent,
 });
@@ -16,9 +23,11 @@ export const Route = createFileRoute("/post/$postId")({
 function RouteComponent() {
 	const { postId } = Route.useParams();
 	const { data } = useSuspenseQuery(fetchPostBySlugQueryOptions(postId));
+	const { data: commentData } = useSuspenseInfiniteQuery(fetchPostCommentsQueryOpts(postId));
 	const { mutate: likePost } = useLikePost();
 	const { mutate: unlikePost } = useUnlikePost();
 	const { title, body, username, slug, likedByUser, id, likeCount } = data[0];
+	const comments = commentData?.pages.flatMap((p) => p.results) ?? [];
 
 	const toggleLike = () =>
 		likedByUser ? unlikePost({ postId: id, slug }) : likePost({ postId: id, slug });
@@ -33,7 +42,7 @@ function RouteComponent() {
 			<div className="flex flex-row px-0 py-3 gap-3">
 				<button
 					type="button"
-					className={`btn btn-ghost rounded-full ${likedByUser ? "text-teal-500" : "text-zinc-600"}`}
+					className={`btn btn-ghost rounded-full ${likedByUser ? "text-blue-600" : "text-zinc-600"}`}
 					onClick={toggleLike}
 				>
 					{likeCount}
@@ -46,6 +55,11 @@ function RouteComponent() {
 			</div>
 			<hr className="my-4" />
 			<CommentInput postId={id} />
+			<section className="flex flex-col gap-3 mt-4">
+				{comments.map((comment) => (
+					<Comment key={comment.id} comment={comment.comment} />
+				))}
+			</section>
 		</div>
 	);
 }

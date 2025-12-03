@@ -67,6 +67,9 @@ export const postComment = createServerFn({ method: "POST" })
 	.handler(async ({ context, data }) => {
 		const userId = context.user.id;
 		const { postId, comment } = data;
+		if (comment.length === 0) {
+			throw Error("Comment can't be empty");
+		}
 		const results = await db.insert(comments).values({ postId, comment, userId }).returning();
 
 		return results;
@@ -126,6 +129,7 @@ export const fetchPostsPaginatedServer = createServerFn()
 	.handler(async ({ context, data }) => {
 		const userId = context.user.id;
 		const { limit, offset } = data;
+
 		const results = await db
 			.select({
 				id: posts.id,
@@ -179,4 +183,48 @@ export const fetchPostBySlugServer = createServerFn()
 		}
 
 		return results;
+	});
+
+export const fetchPostComments = createServerFn()
+	.inputValidator(
+		z.object({
+			slug: z.string(),
+			limit: z.number().default(3),
+			offset: z.number().default(0),
+			id: z.string().nullable().default(null),
+		}),
+	)
+	.handler(async ({ data }) => {
+		const { limit, offset, id } = data;
+
+		async function fetchPosts(postId: string) {
+			const results = await db
+				.select()
+				.from(comments)
+				.where(eq(comments.postId, postId))
+				.orderBy(desc(comments.createdAt))
+				.limit(limit)
+				.offset(offset);
+			return results;
+		}
+
+		if (id !== null) {
+			const results = await fetchPosts(id);
+			return { results, nextOffset: results.length === limit ? offset + limit : null };
+		}
+
+		const postId = await db
+			.select({ id: posts.id })
+			.from(posts)
+			.where(eq(posts.slug, data.slug))
+			.limit(1);
+
+		if (postId.length === 0) {
+			const error = new Error("Post doesn't exist in DB");
+			throw error;
+		}
+
+		const results = await fetchPosts(postId[0].id);
+
+		return { results, nextOffset: results.length === limit ? offset + limit : null };
 	});
