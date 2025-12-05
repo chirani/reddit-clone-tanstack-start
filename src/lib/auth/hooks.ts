@@ -1,9 +1,11 @@
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+import { getRequestHeaders } from "@tanstack/react-start/server";
 import { getContext } from "@/integrations/tanstack-query/root-provider";
 import { authClient } from "@/lib/auth-client";
 import { auth } from "../auth";
-import { authQueries } from "./api";
+import { authQueries, userAuthMiddleware } from "./api";
 
 export const useSignIn = () => {
 	const router = useRouter();
@@ -58,7 +60,7 @@ export const useSignOut = () => {
 
 	return useMutation({
 		mutationFn: async () => {
-			return await auth.api.signOut();
+			return await signOut();
 		},
 		onSuccess: async () => {
 			await Promise.all([
@@ -68,6 +70,13 @@ export const useSignOut = () => {
 		},
 	});
 };
+
+export const signOut = createServerFn({ method: "POST" })
+	.middleware([userAuthMiddleware])
+	.handler(async () => {
+		const headers = getRequestHeaders();
+		return await auth.api.signOut({ headers });
+	});
 
 export const useAuthQuery = () => useQuery(authQueries.user());
 

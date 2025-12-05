@@ -28,7 +28,7 @@ const Navbar: React.FC = () => {
 							disabled={isSignouPending}
 							type="button"
 							className="btn btn-outline btn-neutral"
-							onMouseDown={() => {
+							onClick={() => {
 								signOut();
 							}}
 						>
