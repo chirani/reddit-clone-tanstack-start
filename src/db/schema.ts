@@ -1,9 +1,15 @@
 import { sql } from "drizzle-orm";
-import { pgTable, primaryKey, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, primaryKey, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
 import { account, session, user, verification } from "../../auth-schema.ts";
 
 export { account, session, user, verification };
+
+const timestamps = {
+	createdAt: timestamp("created_at").defaultNow(),
+	updatedAt: timestamp("updated_at"),
+	deletedAt: timestamp("deleted_at"),
+};
 
 export function generateSlug(text: string) {
 	const base = text
@@ -23,7 +29,7 @@ export const posts = pgTable("posts", {
 	title: text("title").notNull(),
 	slug: text("slug").notNull(),
 	body: text("body").notNull(),
-	createdAt: timestamp("created_at").defaultNow(),
+	...timestamps,
 });
 
 export const likes = pgTable(
@@ -36,6 +42,12 @@ export const likes = pgTable(
 	(table) => [primaryKey({ columns: [table.postId, table.userId] })],
 );
 
+export const communities = pgTable("communities", {
+	id: text("id").default(sql`gen_random_uuid()`).primaryKey(),
+	title: varchar("title", { length: 128 }),
+	...timestamps,
+});
+
 export const comments = pgTable("comments", {
 	id: text("id").default(sql`gen_random_uuid()`).primaryKey(),
 	userId: text("user_id")
@@ -45,7 +57,5 @@ export const comments = pgTable("comments", {
 		.references(() => posts.id)
 		.notNull(),
 	comment: text("comment").notNull(),
-	createdAt: timestamp("created_at").defaultNow(),
-	updatedAt: timestamp("updated_at"),
-	deletedAt: timestamp("deleted_at"),
+	...timestamps,
 });
