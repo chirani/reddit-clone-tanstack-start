@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
+import { redirect } from "@tanstack/react-router";
 import { createMiddleware, createServerFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import { auth } from "@/lib/auth";
@@ -33,7 +34,7 @@ export const userAuthMiddleware = createMiddleware({ type: "function" }).server(
 		const session = await auth.api.getSession({ headers });
 
 		if (!session?.user) {
-			throw new Error("Unauthorized");
+			throw redirect({ to: "/signin" });
 		}
 		return next({ context: { session: session.session, user: session.user } });
 	},
