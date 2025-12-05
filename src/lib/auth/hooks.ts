@@ -2,6 +2,7 @@ import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
 import { getContext } from "@/integrations/tanstack-query/root-provider";
 import { authClient } from "@/lib/auth-client";
+import { auth } from "../auth";
 import { authQueries } from "./api";
 
 export const useSignIn = () => {
@@ -9,6 +10,7 @@ export const useSignIn = () => {
 	const session = authClient.useSession();
 	const { queryClient } = getContext();
 	const user = session?.data?.user;
+
 	return useMutation({
 		mutationFn: async ({ email, password }: { email: string; password: string }) => {
 			if (user) return;
@@ -55,7 +57,9 @@ export const useSignOut = () => {
 	const context = getContext();
 
 	return useMutation({
-		mutationFn: async () => await authClient.signOut(),
+		mutationFn: async () => {
+			return await auth.api.signOut();
+		},
 		onSuccess: async () => {
 			await Promise.all([
 				router.invalidate(),
