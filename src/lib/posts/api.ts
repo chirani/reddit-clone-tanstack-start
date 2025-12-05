@@ -4,7 +4,7 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
 import { generateSlug, likes, posts, user } from "@/db/schema";
-import { userAuthMiddleware } from "@/lib/auth/hooks";
+import { userAuthMiddleware } from "@/lib/auth/api";
 
 export const postSchema = z.object({
 	title: z.string().max(255),

@@ -53,18 +53,6 @@ export const useSignUp = () => {
 	});
 };
 
-export const userAuthMiddleware = createMiddleware({ type: "function" }).server(
-	async ({ next }) => {
-		const headers = getRequestHeaders();
-		const session = await auth.api.getSession({ headers });
-
-		if (!session?.user) {
-			throw new Error("Unauthorized");
-		}
-		return next({ context: { session: session.session, user: session.user } });
-	},
-);
-
 export const useSignOut = () => {
 	const router = useRouter();
 	const context = getContext();

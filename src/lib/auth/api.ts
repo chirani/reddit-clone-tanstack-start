@@ -22,7 +22,7 @@ export const authQueries = {
 	user: () =>
 		queryOptions({
 			queryKey: [...authQueries.all, "user"],
-			queryFn: () => getUserSession(),
+			queryFn: async () => await getUserSession(),
 			staleTime: 5000,
 		}),
 };
