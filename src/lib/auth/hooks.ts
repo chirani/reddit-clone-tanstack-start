@@ -60,7 +60,7 @@ export const useSignOut = () => {
 
 	return useMutation({
 		mutationFn: async () => {
-			return await signOut();
+			return await authClient.signOut();
 		},
 		onSuccess: async () => {
 			await Promise.all([
@@ -70,13 +70,6 @@ export const useSignOut = () => {
 		},
 	});
 };
-
-export const signOut = createServerFn({ method: "POST" })
-	.middleware([userAuthMiddleware])
-	.handler(async () => {
-		const headers = getRequestHeaders();
-		return await auth.api.signOut({ headers });
-	});
 
 export const useAuthQuery = () => useQuery(authQueries.user());
 
