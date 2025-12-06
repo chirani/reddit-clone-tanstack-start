@@ -1,12 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import type React from "react";
+import { useEffect, useRef } from "react";
 import { useAuthQuery, useSignOut } from "@/lib/auth/hooks";
 
 const Navbar: React.FC = () => {
 	const { data } = useAuthQuery();
-	const { mutate: signOut, isPending: isSignouPending } = useSignOut();
-
+	const { mutate: signOut, isPending: isSignouPending, isSuccess } = useSignOut();
 	const isAuthenticated = !!data?.user;
+
+	useEffect(() => {
+		if (isSuccess) {
+			window.location.reload();
+		}
+	}, [isSuccess]);
 
 	return (
 		<div className="navbar bg-base-100 shadow-sm">
@@ -19,21 +25,33 @@ const Navbar: React.FC = () => {
 			<div className="navbar-end gap-3">
 				{isAuthenticated && (
 					<>
-						<Link to="/post/create" className="bg-red-100">
+						<Link to="/post/create">
 							<button type="button" className="btn btn-primary w-full">
 								Create A Post
 							</button>
 						</Link>
-						<button
-							disabled={isSignouPending}
-							type="button"
-							className="btn btn-outline btn-neutral"
-							onClick={() => {
-								signOut();
-							}}
-						>
-							Log out
-						</button>
+						<details className="dropdown dropdown-end">
+							<summary className="btn m-1">...More</summary>
+							<ul className="menu dropdown-content bg-base-100 rounded-box z-1 mt-1 w-52 p-2 shadow-sm gap-2.5">
+								<li>
+									<Link to="/community/create" className="btn btn-sm btn-ghost">
+										+ Create a Community
+									</Link>
+								</li>
+								<li>
+									<button
+										disabled={isSignouPending}
+										type="button"
+										className="btn btn-sm btn-outline btn-neutral"
+										onClick={() => {
+											signOut();
+										}}
+									>
+										Log out
+									</button>
+								</li>
+							</ul>
+						</details>
 					</>
 				)}
 				{!isAuthenticated && (

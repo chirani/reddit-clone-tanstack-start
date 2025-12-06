@@ -14,6 +14,7 @@ import { Route as SigninRouteImport } from './routes/signin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PostCreateRouteImport } from './routes/post/create'
 import { Route as PostPostIdRouteImport } from './routes/post/$postId'
+import { Route as CommunityCreateRouteImport } from './routes/community/create'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const SignupRoute = SignupRouteImport.update({
@@ -41,6 +42,11 @@ const PostPostIdRoute = PostPostIdRouteImport.update({
   path: '/post/$postId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommunityCreateRoute = CommunityCreateRouteImport.update({
+  id: '/community/create',
+  path: '/community/create',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/community/create': typeof CommunityCreateRoute
   '/post/$postId': typeof PostPostIdRoute
   '/post/create': typeof PostCreateRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/community/create': typeof CommunityCreateRoute
   '/post/$postId': typeof PostPostIdRoute
   '/post/create': typeof PostCreateRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -68,6 +76,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/signin': typeof SigninRoute
   '/signup': typeof SignupRoute
+  '/community/create': typeof CommunityCreateRoute
   '/post/$postId': typeof PostPostIdRoute
   '/post/create': typeof PostCreateRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -78,6 +87,7 @@ export interface FileRouteTypes {
     | '/'
     | '/signin'
     | '/signup'
+    | '/community/create'
     | '/post/$postId'
     | '/post/create'
     | '/api/auth/$'
@@ -86,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/signin'
     | '/signup'
+    | '/community/create'
     | '/post/$postId'
     | '/post/create'
     | '/api/auth/$'
@@ -94,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/signin'
     | '/signup'
+    | '/community/create'
     | '/post/$postId'
     | '/post/create'
     | '/api/auth/$'
@@ -103,6 +115,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SigninRoute: typeof SigninRoute
   SignupRoute: typeof SignupRoute
+  CommunityCreateRoute: typeof CommunityCreateRoute
   PostPostIdRoute: typeof PostPostIdRoute
   PostCreateRoute: typeof PostCreateRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -145,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostPostIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/community/create': {
+      id: '/community/create'
+      path: '/community/create'
+      fullPath: '/community/create'
+      preLoaderRoute: typeof CommunityCreateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -159,6 +179,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SigninRoute: SigninRoute,
   SignupRoute: SignupRoute,
+  CommunityCreateRoute: CommunityCreateRoute,
   PostPostIdRoute: PostPostIdRoute,
   PostCreateRoute: PostCreateRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

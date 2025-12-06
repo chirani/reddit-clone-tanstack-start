@@ -17,8 +17,8 @@ const Post = ({ id, title, body, likeCount, likedByUser, slug }: IPost) => {
 	const toggleLike = () => (likedByUser ? unlikePost({ postId: id }) : likePost({ postId: id }));
 
 	return (
-		<div className="mb-0 bg-white border-b border-b-zinc-200">
-			<Link to="/post/$postId" params={{ postId: slug }} className="visited:text-blue-800">
+		<div className="mb-0 bg-base-100 border-b border-b-zinc-200">
+			<Link to="/post/$postId" params={{ postId: slug }} className="visited:text-base-content">
 				<div className="p-6 hover:opacity-50">
 					<h2 className="text-2xl font-semibold ">{title}</h2>
 					<p className="text-lg">{body}</p>
@@ -27,7 +27,7 @@ const Post = ({ id, title, body, likeCount, likedByUser, slug }: IPost) => {
 			<div className="flex flex-row px-6 py-3 gap-3">
 				<button
 					type="button"
-					className={`btn btn-ghost rounded-full ${likedByUser ? "text-blue-500" : "text-zinc-600"}`}
+					className={`btn btn-ghost rounded-full ${likedByUser ? "text-info" : "text-base-content"}`}
 					onClick={toggleLike}
 				>
 					{likeCount}
