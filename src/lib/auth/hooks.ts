@@ -1,11 +1,8 @@
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
-import { getRequestHeaders } from "@tanstack/react-start/server";
 import { getContext } from "@/integrations/tanstack-query/root-provider";
 import { authClient } from "@/lib/auth-client";
-import { auth } from "../auth";
-import { authQueries, userAuthMiddleware } from "./api";
+import { authQueries } from "./api";
 
 export const useSignIn = () => {
 	const router = useRouter();
