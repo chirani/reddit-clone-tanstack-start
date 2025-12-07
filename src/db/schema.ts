@@ -1,5 +1,13 @@
 import { sql } from "drizzle-orm";
-import { pgTable, primaryKey, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import {
+	pgEnum,
+	pgTable,
+	primaryKey,
+	text,
+	timestamp,
+	uniqueIndex,
+	varchar,
+} from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
 import { account, session, user, verification } from "../../auth-schema.ts";
 
@@ -45,8 +53,28 @@ export const likes = pgTable(
 export const communities = pgTable("communities", {
 	id: text("id").default(sql`gen_random_uuid()`).primaryKey(),
 	title: varchar("title", { length: 128 }),
+	description: varchar("description", { length: 512 }).notNull(),
+	tags: varchar("tags").array().notNull().default([]),
 	...timestamps,
 });
+
+export const communityAdmins = pgTable(
+	"community-admins",
+	{
+		id: text("id").default(sql`gen_random_uuid()`).primaryKey(),
+		user_id: text("user_id")
+			.references(() => user.id)
+			.notNull(),
+		communityId: text("form_id").references(() => communities.id),
+		role: pgEnum("role", ["admin", "mod", "monitor"])(),
+		...timestamps,
+	},
+	(table) => {
+		return {
+			formRoleUnique: uniqueIndex("form_role_unique").on(table.communityId, table.role),
+		};
+	},
+);
 
 export const comments = pgTable("comments", {
 	id: text("id").default(sql`gen_random_uuid()`).primaryKey(),

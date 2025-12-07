@@ -18,7 +18,7 @@ const Post = ({ id, title, body, likeCount, likedByUser, slug }: IPost) => {
 
 	return (
 		<div className="mb-0 bg-base-100 border-b border-b-zinc-200">
-			<Link to="/post/$postId" params={{ postId: slug }} className="visited:text-base-content">
+			<Link to="/post/$postId" params={{ postId: slug }} className="visited:text-accent-content">
 				<div className="p-6 hover:opacity-50">
 					<h2 className="text-2xl font-semibold ">{title}</h2>
 					<p className="text-lg">{body}</p>

@@ -26,14 +26,12 @@ export const authQueries = {
 		}),
 };
 
-export const userAuthMiddleware = createMiddleware({ type: "function" }).server(
-	async ({ next }) => {
-		const headers = getRequestHeaders();
-		const session = await auth.api.getSession({ headers });
+export const userAuthMiddleware = createMiddleware().server(async ({ next }) => {
+	const headers = getRequestHeaders();
+	const session = await auth.api.getSession({ headers });
 
-		if (!session?.user) {
-			throw redirect({ to: "/signin" });
-		}
-		return next({ context: { session: session.session, user: session.user } });
-	},
-);
+	if (!session?.user) {
+		throw redirect({ to: "/signin" });
+	}
+	return next({ context: { session: session.session, user: session.user } });
+});
