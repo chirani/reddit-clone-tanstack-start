@@ -20,7 +20,6 @@ const CommentInput: React.FC<ICommentInput> = (props) => {
 		resolver: zodResolver(commentSchema),
 	});
 	const onSubmit = handleSubmit((data) => {
-		console.log(data);
 		postComment({ comment: data.comment.trim(), postId: props.postId });
 		reset();
 	});
