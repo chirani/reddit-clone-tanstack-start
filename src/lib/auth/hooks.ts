@@ -18,9 +18,12 @@ export const useSignIn = () => {
 				password,
 			});
 		},
-		onSuccess() {
-			queryClient.invalidateQueries({ queryKey: ["user"] });
-			router.invalidate();
+		onSuccess: async () => {
+			await Promise.all([
+				router.invalidate(),
+				queryClient.invalidateQueries({ queryKey: ["user"] }),
+			]);
+			window.location.replace("/");
 		},
 	});
 };
@@ -28,6 +31,7 @@ export const useSignIn = () => {
 export const useSignUp = () => {
 	const router = useRouter();
 	const { queryClient } = getContext();
+
 	return useMutation({
 		mutationFn: async ({
 			email,
@@ -44,9 +48,12 @@ export const useSignUp = () => {
 				name,
 			});
 		},
-		onSuccess() {
-			queryClient.invalidateQueries({ queryKey: ["user"] });
-			router.invalidate();
+		onSuccess: async () => {
+			await Promise.all([
+				router.invalidate(),
+				queryClient.invalidateQueries({ queryKey: ["user"] }),
+			]);
+			window.location.replace("/");
 		},
 	});
 };
@@ -64,6 +71,7 @@ export const useSignOut = () => {
 				router.invalidate(),
 				context.queryClient.invalidateQueries({ queryKey: ["user"] }),
 			]);
+			window.location.replace("/");
 		},
 	});
 };

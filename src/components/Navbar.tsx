@@ -1,18 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import type React from "react";
-import { useEffect } from "react";
 import { useAuthQuery, useSignOut } from "@/lib/auth/hooks";
 
 const Navbar: React.FC = () => {
 	const { data } = useAuthQuery();
-	const { mutate: signOut, isPending: isSignouPending, isSuccess } = useSignOut();
+	const { mutate: signOut, isPending: isSignouPending } = useSignOut();
 	const isAuthenticated = !!data?.user;
-
-	useEffect(() => {
-		if (isSuccess) {
-			window.location.reload();
-		}
-	}, [isSuccess]);
 
 	return (
 		<div className="navbar bg-base-100 shadow-sm">
@@ -42,7 +35,7 @@ const Navbar: React.FC = () => {
 									<button
 										disabled={isSignouPending}
 										type="button"
-										className="btn btn-sm btn-outline btn-neutral"
+										className="btn btn-sm btn-outline"
 										onClick={() => {
 											signOut();
 										}}
