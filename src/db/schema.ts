@@ -57,6 +57,7 @@ export const communities = pgTable("communities", {
 	tags: varchar("tags").array().notNull().default([]),
 	...timestamps,
 });
+export const roleEnum = pgEnum("role", ["admin", "mod", "monitor"]);
 
 export const communityAdmins = pgTable(
 	"community-admins",
@@ -66,7 +67,7 @@ export const communityAdmins = pgTable(
 			.references(() => user.id)
 			.notNull(),
 		communityId: text("form_id").references(() => communities.id),
-		role: pgEnum("role", ["admin", "mod", "monitor"])(),
+		role: roleEnum(),
 		...timestamps,
 	},
 	(table) => {
