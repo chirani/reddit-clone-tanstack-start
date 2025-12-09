@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { eq } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
-import { communities } from "@/db/schema";
+import { communities, communityAdmins } from "@/db/schema";
 import { userAuthMiddleware } from "../auth/api";
 
 export const communitySchema = z.object({
@@ -32,4 +32,19 @@ export const createCommunity = createServerFn({ method: "POST" })
 			.returning();
 
 		return newCommunity;
+	});
+
+export const addAdmin = createServerFn({ method: "POST" })
+	.inputValidator(z.object({ communityId: z.string() }))
+	.middleware([userAuthMiddleware])
+	.handler(async ({ data, context }) => {
+		const { user } = context;
+
+		const communityAdmin = await db.insert(communityAdmins).values({
+			role: "admin",
+			userId: user.id,
+			communityId: data.communityId,
+		});
+
+		return communityAdmin;
 	});
