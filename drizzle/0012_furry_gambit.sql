@@ -1,0 +1,1 @@
+ALTER TABLE "community-admins" DROP COLUMN "id";

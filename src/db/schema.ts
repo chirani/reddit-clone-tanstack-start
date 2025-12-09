@@ -1,13 +1,5 @@
 import { sql } from "drizzle-orm";
-import {
-	pgEnum,
-	pgTable,
-	primaryKey,
-	text,
-	timestamp,
-	uniqueIndex,
-	varchar,
-} from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, primaryKey, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
 import { account, session, user, verification } from "../../auth-schema.ts";
 
@@ -62,19 +54,16 @@ export const roleEnum = pgEnum("role", ["admin", "mod", "monitor"]);
 export const communityAdmins = pgTable(
 	"community-admins",
 	{
-		id: text("id").default(sql`gen_random_uuid()`).primaryKey(),
 		userId: text("user_id")
 			.references(() => user.id)
 			.notNull(),
-		communityId: text("community_id").references(() => communities.id),
+		communityId: text("community_id")
+			.references(() => communities.id)
+			.notNull(),
 		role: roleEnum(),
 		...timestamps,
 	},
-	(table) => {
-		return {
-			formRoleUnique: uniqueIndex("commuinty_role_unique").on(table.communityId, table.role),
-		};
-	},
+	(table) => [primaryKey({ columns: [table.userId, table.communityId] })],
 );
 
 export const comments = pgTable("comments", {

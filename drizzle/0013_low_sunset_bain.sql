@@ -1,0 +1,1 @@
+ALTER TABLE "community-admins" ADD CONSTRAINT "community-admins_user_id_community_id_pk" PRIMARY KEY("user_id","community_id");
