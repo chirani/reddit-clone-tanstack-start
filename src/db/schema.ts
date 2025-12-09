@@ -63,7 +63,7 @@ export const communityAdmins = pgTable(
 	"community-admins",
 	{
 		id: text("id").default(sql`gen_random_uuid()`).primaryKey(),
-		user_id: text("user_id")
+		userId: text("user_id")
 			.references(() => user.id)
 			.notNull(),
 		communityId: text("form_id").references(() => communities.id),

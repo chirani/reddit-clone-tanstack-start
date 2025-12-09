@@ -23,7 +23,7 @@ const Navbar: React.FC = () => {
 								Create A Post
 							</button>
 						</Link>
-						<details className="dropdown dropdown-end">
+						<details open={false} className="dropdown dropdown-end">
 							<summary className="btn m-1">...More</summary>
 							<ul className="menu dropdown-content bg-base-100 rounded-box z-1 mt-1 w-52 p-2 shadow-sm gap-2.5">
 								<li>
