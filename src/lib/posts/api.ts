@@ -17,9 +17,11 @@ export const createPostServer = createServerFn({ method: "POST" })
 	.handler(async ({ data, context }) => {
 		const userId = context.user.id;
 		const { body, title } = data;
+		const generatedSlug = generateSlug(title);
+
 		const results = await db
 			.insert(posts)
-			.values({ userId, body, title, slug: generateSlug(title) })
+			.values({ userId, body, title, slug: generatedSlug, id: generatedSlug })
 			.returning();
 
 		return results;

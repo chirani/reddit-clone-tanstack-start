@@ -28,7 +28,7 @@ export const createCommunity = createServerFn({ method: "POST" })
 
 		const newCommunity = await db
 			.insert(communities)
-			.values({ ...data })
+			.values({ ...data, id: data.title })
 			.returning();
 
 		return newCommunity;
