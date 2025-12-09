@@ -66,13 +66,13 @@ export const communityAdmins = pgTable(
 		userId: text("user_id")
 			.references(() => user.id)
 			.notNull(),
-		communityId: text("form_id").references(() => communities.id),
+		communityId: text("community_id").references(() => communities.id),
 		role: roleEnum(),
 		...timestamps,
 	},
 	(table) => {
 		return {
-			formRoleUnique: uniqueIndex("form_role_unique").on(table.communityId, table.role),
+			formRoleUnique: uniqueIndex("commuinty_role_unique").on(table.communityId, table.role),
 		};
 	},
 );
