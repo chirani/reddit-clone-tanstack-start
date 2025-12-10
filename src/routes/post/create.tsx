@@ -37,17 +37,19 @@ function RouteComponent() {
 
 	return (
 		<main className="main items-center">
-			{data.map((community) => {
-				return (
-					<div className="p-3" key={community.id}>
-						{community.title}
-					</div>
-				);
-			})}
 			<div className="card">
 				<form className="card-body gap-3 w-full md:w-[600px] mx-auto" onSubmit={onSubmit}>
 					<h1 className="card-title">What are you think today?</h1>
-
+					<select className="select w-full">
+						<option selected disabled>
+							Select Community
+						</option>
+						{data.map((community) => (
+							<option className="option" key={community.id} value={community.id}>
+								{community.title}
+							</option>
+						))}
+					</select>
 					<input className="input" placeholder="Post Title" type="text" {...register("title")} />
 					{errors?.title?.message && <p className="text-error px-3">{errors.title.message}</p>}
 					<textarea className="textarea" placeholder="Body" {...register("body")} />
