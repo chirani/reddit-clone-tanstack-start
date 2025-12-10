@@ -13,16 +13,16 @@ export const communitySchema = z.object({
 export type Community = z.infer<typeof communitySchema>;
 
 export const createCommunity = createServerFn({ method: "POST" })
-	.middleware([userAuthMiddleware])
 	.inputValidator(communitySchema)
+	.middleware([userAuthMiddleware])
 	.handler(async ({ data }) => {
-		const similarCommunities = await db
+		const existingCommunities = await db
 			.select()
 			.from(communities)
 			.where(eq(communities.title, data.title))
 			.limit(1);
 
-		if (similarCommunities) {
+		if (existingCommunities.length) {
 			throw Error("conflict");
 		}
 
@@ -34,17 +34,26 @@ export const createCommunity = createServerFn({ method: "POST" })
 		return newCommunity;
 	});
 
-export const addAdmin = createServerFn({ method: "POST" })
-	.inputValidator(z.object({ communityId: z.string() }))
+export const addCommunityAdmin = createServerFn({ method: "POST" })
+	.inputValidator(
+		z.object({
+			communityId: z.string(),
+			role: z.enum(["admin", "mod", "monitor"]).default("admin"),
+		}),
+	)
 	.middleware([userAuthMiddleware])
 	.handler(async ({ data, context }) => {
 		const { user } = context;
+		const { role, communityId } = data;
 
-		const communityAdmin = await db.insert(communityAdmins).values({
-			role: "admin",
-			userId: user.id,
-			communityId: data.communityId,
-		});
+		const communityAdmin = await db
+			.insert(communityAdmins)
+			.values({
+				role,
+				communityId,
+				userId: user.id,
+			})
+			.returning();
 
 		return communityAdmin;
 	});
