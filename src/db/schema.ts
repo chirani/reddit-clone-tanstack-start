@@ -29,6 +29,7 @@ export const posts = pgTable("posts", {
 	title: text("title").notNull(),
 	slug: text("slug").notNull(),
 	body: text("body").notNull(),
+	communityId: text("community_id").references(() => communities.id),
 	...timestamps,
 });
 
