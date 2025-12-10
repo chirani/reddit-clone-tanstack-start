@@ -57,3 +57,10 @@ export const addCommunityAdmin = createServerFn({ method: "POST" })
 
 		return communityAdmin;
 	});
+
+export const fetchCommunities = createServerFn({ method: "GET" })
+	.middleware([userAuthMiddleware])
+	.handler(async () => {
+		const communityAdmin = await db.select().from(communities);
+		return communityAdmin;
+	});

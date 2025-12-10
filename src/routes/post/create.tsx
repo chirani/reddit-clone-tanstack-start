@@ -1,6 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
+import { fetchCommunitiesQueryOpts } from "@/lib/community/hooks";
 import { postSchema } from "@/lib/posts/api";
 import { useCreatePost } from "@/lib/posts/hooks";
 
@@ -13,6 +15,9 @@ export const Route = createFileRoute("/post/create")({
 			throw redirect({ to: "/signup" });
 		}
 	},
+	loader: async ({ context }) => {
+		await context.queryClient.ensureQueryData(fetchCommunitiesQueryOpts());
+	},
 });
 
 function RouteComponent() {
@@ -23,6 +28,7 @@ function RouteComponent() {
 	} = useForm({
 		resolver: zodResolver(postSchema),
 	});
+	const { data } = useSuspenseQuery(fetchCommunitiesQueryOpts());
 	const { mutate: createPost, isPending } = useCreatePost();
 
 	const onSubmit = handleSubmit((data) => {
@@ -31,6 +37,13 @@ function RouteComponent() {
 
 	return (
 		<main className="main items-center">
+			{data.map((community) => {
+				return (
+					<div className="p-3" key={community.id}>
+						{community.title}
+					</div>
+				);
+			})}
 			<div className="card">
 				<form className="card-body gap-3 w-full md:w-[600px] mx-auto" onSubmit={onSubmit}>
 					<h1 className="card-title">What are you think today?</h1>

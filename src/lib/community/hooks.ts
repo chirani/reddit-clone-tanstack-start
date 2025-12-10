@@ -1,5 +1,5 @@
-import { useMutation } from "@tanstack/react-query";
-import { addCommunityAdmin, type Community, createCommunity } from "./api";
+import { queryOptions, useMutation } from "@tanstack/react-query";
+import { addCommunityAdmin, type Community, createCommunity, fetchCommunities } from "./api";
 
 export const useCreateCommunity = () => {
 	const { mutateAsync: addAdmin } = useAddCommunityAdmin();
@@ -22,4 +22,10 @@ export const useAddCommunityAdmin = () =>
 		mutationFn: async (communityId: string) => {
 			return await addCommunityAdmin({ data: { communityId } });
 		},
+	});
+
+export const fetchCommunitiesQueryOpts = () =>
+	queryOptions({
+		queryKey: ["fetch-communities"],
+		queryFn: async () => await fetchCommunities(),
 	});
