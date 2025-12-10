@@ -1,0 +1,1 @@
+ALTER TABLE "community-admins" ALTER COLUMN "role" SET NOT NULL;

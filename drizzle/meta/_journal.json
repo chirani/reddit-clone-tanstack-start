@@ -99,6 +99,13 @@
       "when": 1765306519449,
       "tag": "0013_low_sunset_bain",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1765383379382,
+      "tag": "0014_military_karnak",
+      "breakpoints": true
     }
   ]
 }

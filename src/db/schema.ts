@@ -49,6 +49,7 @@ export const communities = pgTable("communities", {
 	tags: varchar("tags").array().notNull().default([]),
 	...timestamps,
 });
+
 export const roleEnum = pgEnum("role", ["admin", "mod", "monitor"]);
 
 export const communityAdmins = pgTable(
@@ -60,7 +61,7 @@ export const communityAdmins = pgTable(
 		communityId: text("community_id")
 			.references(() => communities.id)
 			.notNull(),
-		role: roleEnum(),
+		role: roleEnum().notNull(),
 		...timestamps,
 	},
 	(table) => [primaryKey({ columns: [table.userId, table.communityId] })],
