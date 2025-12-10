@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-import { addAdmin, type Community, createCommunity } from "./api";
+import { addCommunityAdmin, type Community, createCommunity } from "./api";
 
 export const useCreateCommunity = () => {
-	const { mutateAsync: addAdmin } = useAddAdmin();
+	const { mutateAsync: addAdmin } = useAddCommunityAdmin();
 
 	return useMutation({
 		mutationKey: ["create-community"],
@@ -16,10 +16,10 @@ export const useCreateCommunity = () => {
 	});
 };
 
-export const useAddAdmin = () =>
+export const useAddCommunityAdmin = () =>
 	useMutation({
 		mutationKey: ["add-admin"],
 		mutationFn: async (communityId: string) => {
-			return await addAdmin({ data: { communityId } });
+			return await addCommunityAdmin({ data: { communityId } });
 		},
 	});
