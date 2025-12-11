@@ -11,7 +11,7 @@ const Navbar: React.FC = () => {
 		<div className="navbar bg-base-100 shadow-sm">
 			<div className="navbar-start">
 				<Link type="button" className="btn btn-ghost" to="/">
-					<img src="/jumpr.svg" alt="Icon" width="65" />
+					<img src="/community.svg" alt="Icon" width="100" />
 				</Link>
 			</div>
 
