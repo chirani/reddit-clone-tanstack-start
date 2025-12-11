@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { MessageSquareText, ThumbsUp } from "lucide-react";
 import { useLikePost, useUnlikePost } from "@/lib/posts/hooks";
 
-interface IPost {
+interface PostProps {
 	id: string;
 	title: string;
 	body: string;
@@ -11,7 +11,7 @@ interface IPost {
 	likedByUser: boolean;
 }
 
-const Post = ({ id, title, body, likeCount, likedByUser, slug }: IPost) => {
+const Post = ({ id, title, body, likeCount, likedByUser, slug }: PostProps) => {
 	const { mutate: likePost } = useLikePost();
 	const { mutate: unlikePost } = useUnlikePost();
 	const toggleLike = () => (likedByUser ? unlikePost({ postId: id }) : likePost({ postId: id }));

@@ -10,10 +10,10 @@ const commentSchema = z.object({
 	comment: z.string().min(1),
 });
 
-interface ICommentInput {
+interface CommentInputProps {
 	postId: string;
 }
-const CommentInput: React.FC<ICommentInput> = (props) => {
+const CommentInput: React.FC<CommentInputProps> = (props) => {
 	const [commentHidden, toggleHidden] = useState<boolean>(false);
 	const { mutate: postComment, isPending } = usePostComment();
 	const { register, handleSubmit, setFocus, reset } = useForm({
@@ -35,7 +35,7 @@ const CommentInput: React.FC<ICommentInput> = (props) => {
 				className="input md:input-lg rounded-full"
 				hidden={commentHidden}
 			>
-				<MessageSquareText className="text-md mx-3" />
+				<MessageSquareText className="text-base-content text-md mx-3" />
 				<p className="opacity-50">Green Eggs and Ham</p>
 			</label>
 			<textarea
