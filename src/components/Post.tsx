@@ -11,14 +11,14 @@ interface PostProps {
 	likedByUser: boolean;
 }
 
-const Post = ({ id, title, body, likeCount, likedByUser, slug }: PostProps) => {
+const Post = ({ id, title, body, likeCount, likedByUser }: PostProps) => {
 	const { mutate: likePost } = useLikePost();
 	const { mutate: unlikePost } = useUnlikePost();
 	const toggleLike = () => (likedByUser ? unlikePost({ postId: id }) : likePost({ postId: id }));
 
 	return (
 		<div className="mb-0 bg-base-100 border-b border-b-zinc-200">
-			<Link to="/post/$postId" params={{ postId: slug }} className="visited:text-accent-content">
+			<Link to="/post/$postId" params={{ postId: id }} className="visited:text-accent-content">
 				<div className="p-6 hover:opacity-50">
 					<h2 className="text-2xl font-semibold ">{title}</h2>
 					<p className="text-lg">{body}</p>

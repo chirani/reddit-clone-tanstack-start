@@ -40,8 +40,8 @@ function RouteComponent() {
 			<div className="card">
 				<form className="card-body gap-3 w-full md:w-[600px] mx-auto" onSubmit={onSubmit}>
 					<h1 className="card-title">What are you think today?</h1>
-					<select className="select w-full">
-						<option selected disabled>
+					<select className="select w-full" defaultValue={"none"}>
+						<option value="none" disabled>
 							Select Community
 						</option>
 						{data.map((community) => (

@@ -1,6 +1,6 @@
 import { notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, or, sql } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
 import { generateSlug, likes, posts, user } from "@/db/schema";
@@ -117,13 +117,13 @@ export const fetchPostsPaginatedServer = createServerFn()
 export const fetchPostBySlugServer = createServerFn()
 	.inputValidator(
 		z.object({
-			slug: z.string(),
+			postIdOrSlug: z.string(),
 		}),
 	)
 	.middleware([userAuthMiddleware])
 	.handler(async ({ data, context }) => {
 		const userId = context.user.id;
-
+		const { postIdOrSlug } = data;
 		const results = await db
 			.select({
 				id: posts.id,
@@ -139,7 +139,7 @@ export const fetchPostBySlugServer = createServerFn()
 			.leftJoin(likes, eq(posts.id, likes.postId))
 			.leftJoin(user, eq(posts.userId, user.id))
 			.groupBy(posts.id, user.name)
-			.where(eq(posts.slug, data.slug))
+			.where(or(eq(posts.id, postIdOrSlug), eq(posts.slug, postIdOrSlug)))
 			.limit(1);
 
 		if (results.length === 0) {

@@ -39,10 +39,10 @@ export const fetchPostsPagintedQueryOptions = () =>
 		getNextPageParam: (lastPage) => lastPage.nextOffset,
 	});
 
-export const fetchPostBySlugQueryOptions = (slug: string) =>
+export const fetchPostBySlugQueryOptions = (postIdOrSlug: string) =>
 	queryOptions({
-		queryKey: ["fetch-post", slug],
-		queryFn: async () => await fetchPostBySlugServer({ data: { slug } }),
+		queryKey: ["fetch-post", postIdOrSlug],
+		queryFn: async () => await fetchPostBySlugServer({ data: { postIdOrSlug } }),
 	});
 
 export const useLikePost = () => {
