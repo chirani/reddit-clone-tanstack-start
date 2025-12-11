@@ -10,10 +10,23 @@ export const Route = createFileRoute("/post/$postId")({
 	component: RouteComponent,
 	loader: async ({ context, params }) => {
 		const { postId } = params;
-		await context.queryClient.ensureQueryData(fetchPostBySlugQueryOptions(postId));
+		const post = await context.queryClient.ensureQueryData(fetchPostBySlugQueryOptions(postId));
 		await context.queryClient.ensureInfiniteQueryData(fetchPostCommentsQueryOpts(postId));
+		return { post };
 	},
 	notFoundComponent: NotFoundComponent,
+	head: (ctx) => {
+		const post = ctx.loaderData?.post;
+		const psotTitle = post?.length ? post[0].title : "";
+
+		return {
+			meta: [
+				{
+					title: `${psotTitle} - Community`,
+				},
+			],
+		};
+	},
 });
 
 function RouteComponent() {
@@ -24,7 +37,6 @@ function RouteComponent() {
 	const { mutate: unlikePost } = useUnlikePost();
 	const { title, body, username, slug, likedByUser, id, likeCount } = data[0];
 	const comments = commentData?.pages.flatMap((p) => p.results) ?? [];
-
 	const toggleLike = () =>
 		likedByUser ? unlikePost({ postId: id, slug }) : likePost({ postId: id, slug });
 

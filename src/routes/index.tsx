@@ -13,6 +13,13 @@ export const Route = createFileRoute("/")({
 	loader: async ({ context }) => {
 		await context.queryClient.ensureInfiniteQueryData(fetchPostsPagintedQueryOptions());
 	},
+	head: () => ({
+		meta: [
+			{
+				title: "Community",
+			},
+		],
+	}),
 });
 
 function App() {
