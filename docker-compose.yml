@@ -2,15 +2,16 @@ services:
   db:
     image: postgres:18
     container_name: postgres_db
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
       POSTGRES_DB: mydatabase
+      PGDATA: /var/lib/postgresql/18/docker 
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql 
   minio:
     image: minio/minio
     environment:
@@ -24,5 +25,5 @@ services:
       - s3_data:/path/to/minio/data:/data
 
 volumes:
-  db_data:
+  pgdata:
   s3_data:
