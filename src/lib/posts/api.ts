@@ -9,6 +9,7 @@ import { userAuthMiddleware } from "@/lib/auth/api";
 export const postSchema = z.object({
 	title: z.string().max(255),
 	body: z.string().min(125),
+	communityId: z.string().min(5),
 });
 
 export const createPostServer = createServerFn({ method: "POST" })
@@ -16,12 +17,12 @@ export const createPostServer = createServerFn({ method: "POST" })
 	.inputValidator(postSchema)
 	.handler(async ({ data, context }) => {
 		const userId = context.user.id;
-		const { body, title } = data;
+		const { body, title, communityId } = data;
 		const generatedSlug = generateSlug(title);
 
 		const results = await db
 			.insert(posts)
-			.values({ userId, body, title, slug: generatedSlug, id: generatedSlug })
+			.values({ userId, body, title, communityId, slug: generatedSlug, id: generatedSlug })
 			.returning();
 
 		return results;

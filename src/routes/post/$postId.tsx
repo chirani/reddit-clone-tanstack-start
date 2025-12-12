@@ -15,8 +15,8 @@ export const Route = createFileRoute("/post/$postId")({
 		return { post };
 	},
 	notFoundComponent: NotFoundComponent,
-	head: (ctx) => {
-		const post = ctx.loaderData?.post;
+	head: ({ loaderData }) => {
+		const post = loaderData?.post;
 		const psotTitle = post?.length ? post[0].title : "";
 
 		return {

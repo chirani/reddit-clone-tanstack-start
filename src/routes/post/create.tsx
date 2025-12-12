@@ -18,6 +18,14 @@ export const Route = createFileRoute("/post/create")({
 	loader: async ({ context }) => {
 		await context.queryClient.ensureQueryData(fetchCommunitiesQueryOpts());
 	},
+
+	head: () => ({
+		meta: [
+			{
+				title: "Write Post - Community",
+			},
+		],
+	}),
 });
 
 function RouteComponent() {
@@ -40,8 +48,8 @@ function RouteComponent() {
 			<div className="card">
 				<form className="card-body gap-3 w-full md:w-[600px] mx-auto" onSubmit={onSubmit}>
 					<h1 className="card-title">What are you think today?</h1>
-					<select className="select w-full" defaultValue={"none"}>
-						<option value="none" disabled>
+					<select className="select w-full" defaultValue="" {...register("communityId")}>
+						<option value="" disabled>
 							Select Community
 						</option>
 						{data.map((community) => (
