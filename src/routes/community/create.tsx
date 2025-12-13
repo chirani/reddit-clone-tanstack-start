@@ -56,7 +56,7 @@ function RouteComponent() {
 							<span className="font-medium">Communiuty Display name: </span>
 							{watch("title", "")
 								.replace(/ /g, "_")
-								.replace(/[^\p{L}\p{N}_]/gu, "")
+								.replace(/[^a-zA-Z0-9_]/g, "")
 								.toLowerCase()}
 						</p>
 					)}

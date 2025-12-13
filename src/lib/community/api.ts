@@ -9,12 +9,11 @@ export const communitySchema = z.object({
 	title: z
 		.string()
 		.min(3)
-		.transform(
-			(val) =>
-				val
-					.replace(/ /g, "_") // replace spaces
-					.replace(/[^\p{L}\p{N}_]/gu, "")
-					.toLowerCase(), // remove special chars
+		.transform((val) =>
+			val
+				.replace(/ /g, "_")
+				.replace(/[^a-zA-Z0-9_]/g, "")
+				.toLowerCase(),
 		),
 	description: z.string().min(100),
 	tags: z.array(z.string()).default([]),
