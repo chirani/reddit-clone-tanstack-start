@@ -51,15 +51,15 @@ function RouteComponent() {
 					{errors?.description?.message && (
 						<p className="text-error px-3">{errors.description.message}</p>
 					)}
-					<p className="font-bold">
-						{Boolean(watch("title")) && (
+					{!!watch("title") && (
+						<p className="font-bold">
 							<span className="font-medium">Communiuty Display name: </span>
-						)}
-						{watch("title")
-							.replace(/ /g, "_")
-							.replace(/[^\p{L}\p{N}_]/gu, "")
-							.toLowerCase()}
-					</p>
+							{watch("title", "")
+								.replace(/ /g, "_")
+								.replace(/[^\p{L}\p{N}_]/gu, "")
+								.toLowerCase()}
+						</p>
+					)}
 					<button type="submit" className="btn btn-neutral" disabled={isPending}>
 						{!isPending ? "Launch a Community" : "Pending..."}
 					</button>

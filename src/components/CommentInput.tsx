@@ -26,18 +26,18 @@ const CommentInput: React.FC<CommentInputProps> = (props) => {
 
 	return (
 		<form onSubmit={onSubmit}>
-			<label
+			<button
+				type="button"
 				onMouseDown={() => {
 					setFocus("comment");
 					toggleHidden(true);
 				}}
-				htmlFor="comment"
 				className="input md:input-lg rounded-full"
 				hidden={commentHidden}
 			>
 				<MessageSquareText className="text-base-content text-md mx-3" />
 				<p className="opacity-50">Green Eggs and Ham</p>
-			</label>
+			</button>
 			<textarea
 				className="textarea"
 				placeholder="Write Comment..."

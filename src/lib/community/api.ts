@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { eq } from "drizzle-orm";
+import { eq, isNull } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
 import { communities, communityAdmins } from "@/db/schema";
@@ -69,6 +69,6 @@ export const addCommunityAdmin = createServerFn({ method: "POST" })
 export const fetchCommunities = createServerFn({ method: "GET" })
 	.middleware([userAuthMiddleware])
 	.handler(async () => {
-		const communityAdmin = await db.select().from(communities);
+		const communityAdmin = await db.select().from(communities).where(isNull(communities.deletedAt));
 		return communityAdmin;
 	});
