@@ -1,18 +1,23 @@
 import { useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { MessageSquareText, ThumbsUp } from "lucide-react";
 import Comment from "@/components/Comment";
 import CommentInput from "@/components/CommentInput";
 import { fetchPostCommentsQueryOpts } from "@/lib/comments/hooks";
 import { fetchPostBySlugQueryOptions, useLikePost, useUnlikePost } from "@/lib/posts/hooks";
 
-export const Route = createFileRoute("/post/$postId")({
+export const Route = createFileRoute("/c/$communityId/$postId")({
 	component: RouteComponent,
-	loader: async ({ context, params }) => {
-		const { postId } = params;
+	loader: async ({ params, context }) => {
+		const { postId, communityId } = params;
 		const post = await context.queryClient.ensureQueryData(fetchPostBySlugQueryOptions(postId));
-		await context.queryClient.ensureInfiniteQueryData(fetchPostCommentsQueryOpts(postId));
-		return { post };
+		if (!post.length) {
+			throw notFound();
+		}
+		if (post[0].communityId === communityId) {
+			return { post };
+		}
+		throw notFound();
 	},
 	notFoundComponent: NotFoundComponent,
 	head: ({ loaderData }) => {
@@ -44,11 +49,12 @@ function RouteComponent() {
 		<div className="main p-4">
 			<div className="breadcrumbs text-md mb-2">
 				<ul>
-					<li>{username}</li>
 					<li>{`c/${communityId}`}</li>
+					<li>{username}</li>
 				</ul>
 			</div>
 			<h1 className="text-4xl font-bold mb-3">{title}</h1>
+
 			<p className="text-lg mt-3">{body}</p>
 			<div className="flex flex-row px-0 py-3 gap-3">
 				<button
