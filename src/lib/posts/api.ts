@@ -115,7 +115,14 @@ export const fetchPostsPaginatedServer = createServerFn()
 			.limit(limit)
 			.offset(offset);
 
-		return { results, nextOffset: results.length === limit ? offset + limit : null };
+		const filteredResults = results.filter((item) => {
+			return item.username !== null && item.communityId !== null;
+		});
+
+		return {
+			results: filteredResults,
+			nextOffset: results.length === limit ? offset + limit : null,
+		};
 	});
 
 export const fetchPostBySlugServer = createServerFn()
@@ -135,6 +142,7 @@ export const fetchPostBySlugServer = createServerFn()
 				body: posts.body,
 				slug: posts.slug,
 				username: user.name,
+				communityId: posts.communityId,
 				createdAt: posts.createdAt,
 				likedByUser: sql<boolean>`BOOL_OR(${eq(likes.userId, userId)})`,
 				likeCount: sql<number>`COUNT(${likes.postId})`,
