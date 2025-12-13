@@ -5,16 +5,18 @@ import { db } from "@/db";
 import { communities, communityAdmins } from "@/db/schema";
 import { userAuthMiddleware } from "../auth/api";
 
+export const communityIdFormatter = (communityId: string = "") => {
+	if (communityId === "") return "";
+	return communityId
+		.replace(/ /g, "_")
+		.replace(/[^a-zA-Z0-9_]/g, "")
+		.toLowerCase();
+};
 export const communitySchema = z.object({
 	title: z
 		.string()
 		.min(3)
-		.transform((val) =>
-			val
-				.replace(/ /g, "_")
-				.replace(/[^a-zA-Z0-9_]/g, "")
-				.toLowerCase(),
-		),
+		.transform((val) => communityIdFormatter(val)),
 	description: z.string().min(100),
 	tags: z.array(z.string()).default([]),
 });

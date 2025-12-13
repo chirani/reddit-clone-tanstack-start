@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
-import { communitySchema } from "@/lib/community/api";
+import { communityIdFormatter, communitySchema } from "@/lib/community/api";
 import { useCreateCommunity } from "@/lib/community/hooks";
 
 export const Route = createFileRoute("/community/create")({
@@ -54,10 +54,7 @@ function RouteComponent() {
 					{!!watch("title") && (
 						<p className="font-bold">
 							<span className="font-medium">Communiuty Display name: </span>
-							{watch("title", "")
-								.replace(/ /g, "_")
-								.replace(/[^a-zA-Z0-9_]/g, "")
-								.toLowerCase()}
+							{communityIdFormatter(watch("title", ""))}
 						</p>
 					)}
 					<button type="submit" className="btn btn-neutral" disabled={isPending}>
