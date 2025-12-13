@@ -13,7 +13,8 @@ export const communitySchema = z.object({
 			(val) =>
 				val
 					.replace(/ /g, "_") // replace spaces
-					.replace(/[^\p{L}\p{N}_]/gu, ""), // remove special chars
+					.replace(/[^\p{L}\p{N}_]/gu, "")
+					.toLowerCase(), // remove special chars
 		),
 	description: z.string().min(100),
 	tags: z.array(z.string()).default([]),

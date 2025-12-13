@@ -42,7 +42,7 @@ function RouteComponent() {
 
 	return (
 		<div className="main p-4">
-			<h1 className="text-3xl">{title}</h1>
+			<h1 className="text-4xl font-bold mb-3">{title}</h1>
 			<p className="text-md">
 				By <span className="text-primary">{username}</span>
 			</p>
