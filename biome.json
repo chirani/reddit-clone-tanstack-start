@@ -9,6 +9,7 @@
 		"ignoreUnknown": false,
 		"includes": [
 			"**/init_data/**/*",
+			"**/script/**/*",
 			"**/src/**/*",
 			"**/.vscode/**/*",
 			"**/index.html",
