@@ -101,13 +101,16 @@ export const fetchPostsPaginatedServer = createServerFn()
 				title: posts.title,
 				body: posts.body,
 				slug: posts.slug,
+				username: user.name,
+				communityId: posts.communityId,
 				createdAt: posts.createdAt,
 				likedByUser: sql<boolean>`BOOL_OR(${eq(likes.userId, userId)})`,
 				likeCount: sql<number>`COUNT(${likes.postId})`,
 			})
 			.from(posts)
+			.leftJoin(user, eq(posts.userId, user.id))
 			.leftJoin(likes, eq(posts.id, likes.postId))
-			.groupBy(posts.id)
+			.groupBy(posts.id, user.name)
 			.orderBy(desc(posts.createdAt))
 			.limit(limit)
 			.offset(offset);
