@@ -74,12 +74,12 @@ function RouteComponent() {
 					{likeCount}
 					<ThumbsUp className="text-md" />
 				</button>
-				<button type="button" className="btn btn-ghost rounded-full text-zinc-600">
+				<button type="button" className="btn btn-ghost rounded-full text-base-content">
 					{0}
 					<MessageSquareText className="text-md" />
 				</button>
 			</div>
-			<hr className="my-4" />
+			<hr className="my-4 text-base-content" />
 			<CommentInput postId={id} />
 			<section className="flex flex-col gap-3 mt-4">
 				{comments.map((comment) => (

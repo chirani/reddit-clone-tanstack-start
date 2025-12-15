@@ -51,7 +51,7 @@ const Post = ({
 					{likeCount}
 					<ThumbsUp className="text-md" />
 				</button>
-				<button type="button" className="btn btn-ghost rounded-full text-zinc-600">
+				<button type="button" className="btn btn-ghost rounded-full text-base-content">
 					{0}
 					<MessageSquareText className="text-md" />
 				</button>
