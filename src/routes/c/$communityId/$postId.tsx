@@ -1,5 +1,5 @@
 import { useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { MessageSquareText, Network, ThumbsUp, User } from "lucide-react";
 import Comment from "@/components/Comment";
 import CommentInput from "@/components/CommentInput";
@@ -9,8 +9,11 @@ import { fetchPostBySlugQueryOptions, useLikePost, useUnlikePost } from "@/lib/p
 export const Route = createFileRoute("/c/$communityId/$postId")({
 	component: RouteComponent,
 	loader: async ({ params, context }) => {
-		const { postId } = params;
+		const { postId, communityId } = params;
 		const posts = await context.queryClient.ensureQueryData(fetchPostBySlugQueryOptions(postId));
+		if (posts[0].communityId !== communityId) {
+			throw notFound();
+		}
 		await context.queryClient.ensureInfiniteQueryData(fetchPostCommentsQueryOpts(postId));
 		return { post: posts[0] };
 	},
@@ -91,9 +94,9 @@ function RouteComponent() {
 }
 
 function NotFoundComponent() {
-	const { postId } = Route.useParams();
+	const { postId, communityId } = Route.useParams();
 
 	return (
-		<div className="main text-4xl text-error">{`Can't find anything for posts/${postId}`}</div>
+		<div className="main text-4xl">{`Can't find anything for\n${postId} in ${communityId}`}</div>
 	);
 }
