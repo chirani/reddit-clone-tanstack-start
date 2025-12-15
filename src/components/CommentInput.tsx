@@ -36,7 +36,7 @@ const CommentInput: React.FC<CommentInputProps> = (props) => {
 				hidden={commentHidden}
 			>
 				<MessageSquareText className="text-base-content text-md mx-3" />
-				<p className="opacity-50">Green Eggs and Ham</p>
+				<p className="opacity-50">I like Green Eggs and Ham...</p>
 			</button>
 			<textarea
 				className="textarea"

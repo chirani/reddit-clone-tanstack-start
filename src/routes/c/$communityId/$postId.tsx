@@ -10,14 +10,19 @@ export const Route = createFileRoute("/c/$communityId/$postId")({
 	component: RouteComponent,
 	loader: async ({ params, context }) => {
 		const { postId } = params;
-		await context.queryClient.ensureQueryData(fetchPostBySlugQueryOptions(postId));
+		const posts = await context.queryClient.ensureQueryData(fetchPostBySlugQueryOptions(postId));
+		await context.queryClient.ensureInfiniteQueryData(fetchPostCommentsQueryOpts(postId));
+		return { post: posts[0] };
 	},
 	notFoundComponent: NotFoundComponent,
-	head: ({ params }) => {
+	head: ({ params, loaderData }) => {
+		const post = loaderData?.post;
+		const title = post?.title ?? params.postId;
+
 		return {
 			meta: [
 				{
-					title: `${params.postId} - Community`,
+					title: `${title} - Community`,
 				},
 			],
 		};
