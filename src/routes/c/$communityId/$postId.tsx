@@ -59,7 +59,7 @@ function RouteComponent() {
 			<div className="flex flex-row px-0 py-3 gap-3">
 				<button
 					type="button"
-					className={`btn btn-ghost rounded-full ${likedByUser ? "text-info" : "text-base-content"}`}
+					className={`btn btn-ghost rounded-full ${likedByUser ? `text-info` : `text-base-content`}`}
 					onClick={toggleLike}
 				>
 					{likeCount}

@@ -3,6 +3,7 @@ import { infiniteQueryOptions, queryOptions, useMutation } from "@tanstack/react
 import {
 	addLikeServer,
 	createPostServer,
+	fetchPostByCommunityServer,
 	fetchPostBySlugServer,
 	fetchPostsPaginatedServer,
 	fetchPostsServer,
@@ -12,7 +13,7 @@ import {
 export const useCreatePost = () => {
 	return useMutation({
 		mutationKey: ["create-post"],
-		mutationFn: async (data: { body: string; title: string }) => {
+		mutationFn: async (data: { body: string; title: string; communityId: string }) => {
 			const results = await createPostServer({ data });
 			return results[0];
 		},
@@ -34,6 +35,19 @@ export const fetchPostsPagintedQueryOptions = () =>
 		queryKey: ["fetch-posts-paginated"],
 		queryFn: async ({ pageParam }) => {
 			const results = await fetchPostsPaginatedServer({ data: { offset: pageParam, limit: 3 } });
+			return results;
+		},
+		getNextPageParam: (lastPage) => lastPage.nextOffset,
+	});
+
+export const fetchPostsByCommunityPagintedQueryOptions = (communityId: string) =>
+	infiniteQueryOptions({
+		initialPageParam: 0,
+		queryKey: ["fetch-posts-community-paginated"],
+		queryFn: async ({ pageParam }) => {
+			const results = await fetchPostByCommunityServer({
+				data: { offset: pageParam, limit: 3, communityId },
+			});
 			return results;
 		},
 		getNextPageParam: (lastPage) => lastPage.nextOffset,

@@ -160,3 +160,42 @@ export const fetchPostBySlugServer = createServerFn()
 
 		return results;
 	});
+
+export const fetchPostByCommunityServer = createServerFn()
+	.middleware([userAuthMiddleware])
+	.inputValidator(
+		z.object({
+			communityId: z.string(),
+			limit: z.number().default(10),
+			offset: z.number().default(0),
+		}),
+	)
+	.handler(async ({ data, context }) => {
+		const userId = context.user.id;
+		const { limit, offset, communityId } = data;
+
+		const results = await db
+			.select({
+				id: posts.id,
+				title: posts.title,
+				body: posts.body,
+				slug: posts.slug,
+				username: user.name,
+				communityId: posts.communityId,
+				createdAt: posts.createdAt,
+				likedByUser: sql<boolean>`BOOL_OR(${eq(likes.userId, userId)})`,
+				likeCount: sql<number>`COUNT(${likes.postId})`,
+			})
+			.from(posts)
+			.leftJoin(likes, eq(posts.id, likes.postId))
+			.leftJoin(user, eq(posts.userId, user.id))
+			.groupBy(posts.id, user.name)
+			.where(eq(posts.communityId, communityId))
+			.limit(limit)
+			.offset(offset);
+
+		return {
+			results,
+			nextOffset: results.length === limit ? offset + limit : null,
+		};
+	});
