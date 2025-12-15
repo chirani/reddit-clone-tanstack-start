@@ -34,7 +34,7 @@ function RouteComponent() {
 		<main className="main items-center">
 			<div className="card">
 				<form className="card-body gap-3 w-full md:w-[600px] mx-auto" onSubmit={onSubmit}>
-					<h1 className="card-title">Create A Comminty</h1>
+					<h1 className="card-title">Create A Community</h1>
 
 					<input
 						className="input"
