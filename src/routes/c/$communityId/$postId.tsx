@@ -1,6 +1,6 @@
 import { useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, notFound } from "@tanstack/react-router";
-import { MessageSquareText, ThumbsUp } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { MessageSquareText, Network, ThumbsUp, User } from "lucide-react";
 import Comment from "@/components/Comment";
 import CommentInput from "@/components/CommentInput";
 import { fetchPostCommentsQueryOpts } from "@/lib/comments/hooks";
@@ -9,25 +9,15 @@ import { fetchPostBySlugQueryOptions, useLikePost, useUnlikePost } from "@/lib/p
 export const Route = createFileRoute("/c/$communityId/$postId")({
 	component: RouteComponent,
 	loader: async ({ params, context }) => {
-		const { postId, communityId } = params;
-		const post = await context.queryClient.ensureQueryData(fetchPostBySlugQueryOptions(postId));
-		if (!post.length) {
-			throw notFound();
-		}
-		if (post[0].communityId === communityId) {
-			return { post };
-		}
-		throw notFound();
+		const { postId } = params;
+		await context.queryClient.ensureQueryData(fetchPostBySlugQueryOptions(postId));
 	},
 	notFoundComponent: NotFoundComponent,
-	head: ({ loaderData }) => {
-		const post = loaderData?.post;
-		const psotTitle = post?.length ? post[0].title : "";
-
+	head: ({ params }) => {
 		return {
 			meta: [
 				{
-					title: `${psotTitle} - Community`,
+					title: `${params.postId} - Community`,
 				},
 			],
 		};
@@ -49,8 +39,22 @@ function RouteComponent() {
 		<div className="main p-4">
 			<div className="breadcrumbs text-md mb-2">
 				<ul>
-					<li>{`c/${communityId}`}</li>
-					<li>{username}</li>
+					<li>
+						<Link
+							hidden={!communityId}
+							to="/c/$communityId"
+							params={{ communityId: communityId ?? "" }}
+						>
+							<Network className="h-4 w-4" />
+							{`c/${communityId}`}
+						</Link>
+					</li>
+					<li>
+						<div>
+							<User className="h-4 w-4" />
+							{username}
+						</div>
+					</li>
 				</ul>
 			</div>
 			<h1 className="text-4xl font-bold mb-3">{title}</h1>

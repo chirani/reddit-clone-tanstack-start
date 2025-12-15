@@ -1,5 +1,6 @@
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Network } from "lucide-react";
 import Post from "@/components/Post";
 import { fetchPostsByCommunityPagintedQueryOptions } from "@/lib/posts/hooks";
 
@@ -13,14 +14,26 @@ export const Route = createFileRoute("/c/$communityId/")({
 });
 
 function RouteComponent() {
-	const params = Route.useParams();
+	const { communityId } = Route.useParams();
+	const { data } = useSuspenseInfiniteQuery(fetchPostsByCommunityPagintedQueryOptions(communityId));
 
-	const { data } = useSuspenseInfiniteQuery(
-		fetchPostsByCommunityPagintedQueryOptions(params.communityId),
-	);
 	const posts = data?.pages.flatMap((p) => p.results) ?? [];
 	return (
 		<div className="main">
+			<div className="breadcrumbs text-md my-6 mb-2">
+				<ul>
+					<li>
+						<Link
+							hidden={!communityId}
+							to="/c/$communityId"
+							params={{ communityId: communityId ?? "" }}
+						>
+							<Network className="h-4 w-4" />
+							{`c/${communityId}`}
+						</Link>
+					</li>
+				</ul>
+			</div>
 			{posts.map((post) => (
 				<Post key={post.id} {...post} />
 			))}
