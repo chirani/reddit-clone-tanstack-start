@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { and, desc, eq } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
-import { comments, posts } from "@/db/schema";
+import { comments, posts, user } from "@/db/schema";
 import { userAuthMiddleware } from "../auth/api";
 
 export const postComment = createServerFn({ method: "POST" })
@@ -57,12 +57,20 @@ export const fetchPostComments = createServerFn()
 
 		async function fetchPosts(postId: string) {
 			const results = await db
-				.select()
+				.select({
+					id: comments.id,
+					username: user.name,
+					comment: comments.comment,
+					createdAt: comments.createdAt,
+				})
 				.from(comments)
+				.leftJoin(user, eq(comments.userId, user.id))
+				.groupBy(comments.id, user.name)
 				.where(eq(comments.postId, postId))
 				.orderBy(desc(comments.createdAt))
 				.limit(limit)
 				.offset(offset);
+
 			return results;
 		}
 
