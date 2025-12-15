@@ -20,14 +20,10 @@ function RouteComponent() {
 	const posts = data?.pages.flatMap((p) => p.results) ?? [];
 	return (
 		<div className="main">
-			<div className="breadcrumbs text-md my-6 mb-2">
+			<div className="breadcrumbs text-md px-6">
 				<ul>
 					<li>
-						<Link
-							hidden={!communityId}
-							to="/c/$communityId"
-							params={{ communityId: communityId ?? "" }}
-						>
+						<Link hidden={!communityId} to="/c/$communityId" params={{ communityId: communityId }}>
 							<Network className="h-4 w-4" />
 							{`c/${communityId}`}
 						</Link>
