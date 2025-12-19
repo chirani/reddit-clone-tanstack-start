@@ -31,16 +31,18 @@ export const Route = createFileRoute("/post/create")({
 function RouteComponent() {
 	const {
 		register,
+		reset,
 		handleSubmit,
 		formState: { errors },
 	} = useForm({
 		resolver: zodResolver(postSchema),
 	});
 	const { data } = useSuspenseQuery(fetchCommunitiesQueryOpts());
-	const { mutate: createPost, isPending } = useCreatePost();
+	const { mutateAsync: createPost, isPending } = useCreatePost();
 
-	const onSubmit = handleSubmit((data) => {
-		createPost({ ...data });
+	const onSubmit = handleSubmit(async (data) => {
+		await createPost({ ...data });
+		reset();
 	});
 
 	return (
@@ -58,6 +60,9 @@ function RouteComponent() {
 							</option>
 						))}
 					</select>
+					{errors?.communityId?.message && (
+						<p className="text-error">{errors?.communityId?.message}</p>
+					)}
 					<input className="input" placeholder="Post Title" type="text" {...register("title")} />
 					{errors?.title?.message && <p className="text-error px-3">{errors.title.message}</p>}
 					<textarea className="textarea" placeholder="Body" {...register("body")} />
