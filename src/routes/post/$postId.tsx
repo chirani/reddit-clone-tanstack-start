@@ -68,7 +68,7 @@ function RouteComponent() {
 			<CommentInput postId={id} />
 			<section className="flex flex-col gap-3 mt-4">
 				{comments.map((comment) => (
-					<Comment key={comment.id} comment={comment.comment} />
+					<Comment key={comment.id} comment={comment.comment} username={comment.username ?? ""} />
 				))}
 			</section>
 		</div>
