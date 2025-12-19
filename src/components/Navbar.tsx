@@ -8,7 +8,7 @@ const Navbar: React.FC = () => {
 	const isAuthenticated = !!data?.user;
 
 	return (
-		<div className="navbar bg-base-100 shadow-sm">
+		<div className="navbar bg-base-100 shadow-sm sticky top-0 z-400">
 			<div className="navbar-start">
 				<Link type="button" className="btn btn-ghost" to="/">
 					<img src="/community.svg" alt="Icon" width="100" />

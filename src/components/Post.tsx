@@ -80,7 +80,7 @@ export const PostMetaData = ({
 	showUsername,
 }: PostMetaDataProps) => {
 	return (
-		<div className="text-md">
+		<div className="text-sm">
 			{showUsername && <span className="text-secondary">{`u/${username} `}</span>}
 			{Boolean(showUsername && showCommunity) && " for "}
 			{showCommunity && <span className="text-secondary"> {`c/${communityId}`}</span>}
