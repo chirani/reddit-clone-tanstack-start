@@ -30,7 +30,7 @@ function App() {
 
 	return (
 		<main className="main flex flex-col items-stretch">
-			{posts?.length && posts.map((post) => <Post key={post.id} {...post} />)}
+			{posts?.length && posts.map((post) => <Post key={post.id} {...post} showCommunity />)}
 			<button
 				hidden={!hasNextPage || isFetching}
 				type="button"

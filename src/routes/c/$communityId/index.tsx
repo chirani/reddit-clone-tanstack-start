@@ -31,7 +31,7 @@ function RouteComponent() {
 				</ul>
 			</div>
 			{posts.map((post) => (
-				<Post key={post.id} {...post} />
+				<Post key={post.id} {...post} showUsername />
 			))}
 		</div>
 	);

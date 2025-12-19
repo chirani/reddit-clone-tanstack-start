@@ -10,6 +10,8 @@ interface PostProps {
 	username: string | null;
 	communityId: string | null;
 	likeCount: number;
+	showCommunity?: boolean;
+	showUsername?: boolean;
 	likedByUser: boolean;
 }
 
@@ -21,6 +23,8 @@ const Post = ({
 	likedByUser,
 	username = "",
 	communityId = "",
+	showCommunity = false,
+	showUsername = false,
 }: PostProps) => {
 	const { mutate: likePost } = useLikePost();
 	const { mutate: unlikePost } = useUnlikePost();
@@ -34,11 +38,13 @@ const Post = ({
 				className="visited:bg-primary"
 			>
 				<div className="p-6 hover:opacity-50">
+					<PostMetaData
+						username={username}
+						communityId={communityId}
+						showCommunity={showCommunity}
+						showUsername={showUsername}
+					/>
 					<h2 className="text-2xl font-semibold ">{title}</h2>
-					<p className="text-md">
-						By <span className="text-primary">{username}</span> c/
-						<span className="text-primary">{communityId}</span>
-					</p>
 					<p className="text-lg">{body}</p>
 				</div>
 			</Link>
@@ -60,4 +66,25 @@ const Post = ({
 	);
 };
 
+interface PostMetaDataProps {
+	username: string | null;
+	communityId: string | null;
+	showCommunity: boolean;
+	showUsername: boolean;
+}
+
+export const PostMetaData = ({
+	username = "",
+	communityId = "",
+	showCommunity,
+	showUsername,
+}: PostMetaDataProps) => {
+	return (
+		<div className="text-md">
+			{showUsername && <span className="text-secondary">{`u/${username} `}</span>}
+			{Boolean(showUsername && showCommunity) && " for "}
+			{showCommunity && <span className="text-secondary"> {`c/${communityId}`}</span>}
+		</div>
+	);
+};
 export default Post;
