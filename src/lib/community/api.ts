@@ -74,3 +74,19 @@ export const fetchCommunities = createServerFn({ method: "GET" })
 		const communityAdmin = await db.select().from(communities).where(isNull(communities.deletedAt));
 		return communityAdmin;
 	});
+
+export const fetchCommunityMetadata = createServerFn({ method: "GET" })
+	.inputValidator(
+		z.object({
+			communityId: z.string().min(3),
+		}),
+	)
+	.handler(async ({ data }) => {
+		const communityMetadata = await db
+			.select()
+			.from(communities)
+			.where(eq(communities.id, data.communityId))
+			.limit(1);
+
+		return communityMetadata;
+	});
