@@ -7,7 +7,9 @@ export { account, session, user, verification };
 
 const timestamps = {
 	createdAt: timestamp("created_at").defaultNow(),
-	updatedAt: timestamp("updated_at"),
+	updatedAt: timestamp("updated_at")
+		.defaultNow()
+		.$onUpdate(() => /* @__PURE__ */ new Date()),
 	deletedAt: timestamp("deleted_at"),
 };
 
@@ -77,5 +79,15 @@ export const comments = pgTable("comments", {
 		.references(() => posts.id)
 		.notNull(),
 	comment: text("comment").notNull(),
+	...timestamps,
+});
+
+export const communityMemberships = pgTable("community_memberships", {
+	userId: text("user_id")
+		.references(() => user.id)
+		.notNull(),
+	communityId: text("community_id")
+		.references(() => communities.id)
+		.notNull(),
 	...timestamps,
 });
