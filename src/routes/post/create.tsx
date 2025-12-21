@@ -55,8 +55,8 @@ function RouteComponent() {
 							Select Community
 						</option>
 						{data.map((community) => (
-							<option className="option" key={community.id} value={community.id}>
-								{community.title}
+							<option className="option" key={community.communityId} value={community.communityId}>
+								{community.communityId}
 							</option>
 						))}
 					</select>

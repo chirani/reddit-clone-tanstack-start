@@ -3,8 +3,10 @@ import {
 	addCommunityAdmin,
 	type Community,
 	createCommunity,
-	fetchCommunities,
 	fetchCommunityMetadata,
+	fetchMyCommunities,
+	joinCommunity,
+	leaveCommunity,
 } from "./api";
 
 export const useCreateCommunity = () => {
@@ -33,7 +35,7 @@ export const useAddCommunityAdmin = () =>
 export const fetchCommunitiesQueryOpts = () =>
 	queryOptions({
 		queryKey: ["fetch-communities"],
-		queryFn: async () => await fetchCommunities(),
+		queryFn: async () => await fetchMyCommunities(),
 	});
 
 export const fetchCommunityMetadataOpts = (communityId: string) =>
@@ -43,3 +45,27 @@ export const fetchCommunityMetadataOpts = (communityId: string) =>
 			return await fetchCommunityMetadata({ data: { communityId } });
 		},
 	});
+
+export const useJoinCommunity = () => {
+	return useMutation({
+		mutationKey: ["join-community"],
+		mutationFn: async (communityId: string) => {
+			return await joinCommunity({ data: { communityId } });
+		},
+		onSuccess: async (_data, _variables, _onMutateResulr, context) => {
+			await context.client.invalidateQueries({ queryKey: ["fetch-community-metadata"] });
+		},
+	});
+};
+
+export const useLeaveCommunity = () => {
+	return useMutation({
+		mutationKey: ["leave-community"],
+		mutationFn: async (communityId: string) => {
+			return await leaveCommunity({ data: { communityId } });
+		},
+		onSuccess: async (_data, _variables, _onMutateResulr, context) => {
+			await context.client.invalidateQueries({ queryKey: ["fetch-community-metadata"] });
+		},
+	});
+};

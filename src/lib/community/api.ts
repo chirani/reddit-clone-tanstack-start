@@ -1,9 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
-import { eq, isNull } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
-import { communities, communityAdmins } from "@/db/schema";
-import { userAuthMiddleware } from "../auth/api";
+import { communities, communityAdmins, communityMemberships } from "@/db/schema";
+import { userAuthMiddleware, userMiddlewareNB } from "../auth/api";
 
 export const communityIdFormatter = (communityId: string = "") => {
 	if (communityId === "") return "";
@@ -68,25 +68,115 @@ export const addCommunityAdmin = createServerFn({ method: "POST" })
 		return communityAdmin;
 	});
 
-export const fetchCommunities = createServerFn({ method: "GET" })
+export const fetchMyCommunities = createServerFn({ method: "GET" })
 	.middleware([userAuthMiddleware])
-	.handler(async () => {
-		const communityAdmin = await db.select().from(communities).where(isNull(communities.deletedAt));
-		return communityAdmin;
+	.handler(async ({ context }) => {
+		const userId = context.user.id;
+		const myCommunities = await db
+			.select()
+			.from(communityMemberships)
+			.where(eq(communityMemberships.userId, userId));
+
+		return myCommunities;
 	});
 
 export const fetchCommunityMetadata = createServerFn({ method: "GET" })
+	.middleware([userMiddlewareNB])
 	.inputValidator(
 		z.object({
 			communityId: z.string().min(3),
 		}),
 	)
-	.handler(async ({ data }) => {
+	.handler(async ({ data, context }) => {
+		let isCommunityMember = false;
+
+		if (context?.user) {
+			const commUser = await db
+				.select()
+				.from(communityMemberships)
+				.where(
+					and(
+						eq(communityMemberships.communityId, data.communityId),
+						eq(communityMemberships.userId, context.user.id),
+					),
+				)
+				.limit(1);
+
+			isCommunityMember = commUser.length > 0;
+		}
 		const communityMetadata = await db
 			.select()
 			.from(communities)
 			.where(eq(communities.id, data.communityId))
 			.limit(1);
 
-		return communityMetadata;
+		return { ...communityMetadata[0], isCommunityMember };
+	});
+
+export const joinCommunity = createServerFn({ method: "POST" })
+	.middleware([userAuthMiddleware])
+	.inputValidator(
+		z.object({
+			communityId: z.string().min(3),
+		}),
+	)
+	.handler(async ({ data, context }) => {
+		const userId = context.user.id;
+		const { communityId } = data;
+
+		const existingMembership = db
+			.select()
+			.from(communityMemberships)
+			.where(
+				and(
+					eq(communityMemberships.userId, userId),
+					eq(communityMemberships.communityId, communityId),
+				),
+			);
+
+		if ((await existingMembership).length) {
+			throw Error("Already a member");
+		}
+
+		const res = await db.insert(communityMemberships).values({ communityId, userId }).returning();
+
+		return res;
+	});
+
+export const leaveCommunity = createServerFn({ method: "POST" })
+	.middleware([userAuthMiddleware])
+	.inputValidator(
+		z.object({
+			communityId: z.string().min(3),
+		}),
+	)
+	.handler(async ({ data, context }) => {
+		const userId = context.user.id;
+		const { communityId } = data;
+
+		const existingMembership = await db
+			.select()
+			.from(communityMemberships)
+			.where(
+				and(
+					eq(communityMemberships.userId, userId),
+					eq(communityMemberships.communityId, communityId),
+				),
+			);
+
+		if (!existingMembership.length) {
+			throw Error("Not a member");
+		}
+
+		const res = await db
+			.delete(communityMemberships)
+			.where(
+				and(
+					eq(communityMemberships.communityId, communityId),
+					eq(communityMemberships.userId, userId),
+				),
+			)
+			.returning();
+
+		return res;
 	});
