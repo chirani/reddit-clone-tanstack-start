@@ -35,3 +35,10 @@ export const userAuthMiddleware = createMiddleware().server(async ({ next }) => 
 	}
 	return next({ context: { session: session.session, user: session.user } });
 });
+
+export const userMiddlewareNB = createMiddleware().server(async ({ next }) => {
+	const headers = getRequestHeaders();
+	const session = await auth.api.getSession({ headers });
+
+	return next({ context: { session: session?.session ?? null, user: session?.user ?? null } });
+});
