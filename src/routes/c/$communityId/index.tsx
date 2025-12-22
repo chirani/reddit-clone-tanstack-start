@@ -18,6 +18,15 @@ export const Route = createFileRoute("/c/$communityId/")({
 		);
 		return communityMetaData;
 	},
+	head: ({ params }) => {
+		return {
+			meta: [
+				{
+					title: `${params.communityId} - Community`,
+				},
+			],
+		};
+	},
 	component: RouteComponent,
 });
 
