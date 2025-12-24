@@ -60,37 +60,45 @@ export const fetchPostBySlugQueryOptions = (postIdOrSlug: string) =>
 	});
 
 export const useLikePost = () => {
+	type location = "main-page" | "post-page" | "community-page";
 	return useMutation({
-		mutationFn: async ({ postId }: { postId: string; slug?: string }) =>
+		mutationFn: async ({ postId }: { postId: string; location?: location; pageNumber?: number }) =>
 			await addLikeServer({ data: { postId } }),
 		mutationKey: ["add-like"],
-		onMutate: async ({ postId, slug }, context) => {
-			if (!slug) {
+		onMutate: async ({ postId, pageNumber = 0, location = "main-page" }, context) => {
+			if (location === "main-page") {
 				await context.client.cancelQueries({ queryKey: ["fetch-posts-paginated"] });
-				type posts = Awaited<ReturnType<typeof fetchPostsPaginatedServer>>;
+				type postsPaginated = Awaited<ReturnType<typeof fetchPostsPaginatedServer>>;
 
-				context.client.setQueryData<InfiniteData<posts>>(["fetch-posts-paginated"], (old) => {
-					if (!old) return old;
+				context.client.setQueryData<InfiniteData<postsPaginated>>(
+					["fetch-posts-paginated"],
+					(old) => {
+						if (!old) return old;
 
-					const newPages = old.pages.map((page) => ({
-						...page,
-						results: page.results.map((item) => {
-							if (item.id === postId && !item.likedByUser) {
-								return { ...item, likeCount: Number(item.likeCount) + 1, likedByUser: true };
-							}
-							return item;
-						}),
-					}));
+						const newPages = old.pages.map((page, index) => {
+							if (index !== pageNumber) return page;
 
-					return { ...old, pages: newPages };
-				});
+							return {
+								...page,
+								results: page.results.map((item) => {
+									if (item.id === postId && !item.likedByUser) {
+										return { ...item, likeCount: Number(item.likeCount) + 1, likedByUser: true };
+									}
+									return item;
+								}),
+							};
+						});
+
+						return { ...old, pages: newPages };
+					},
+				);
 				return;
 			}
 
 			type posts = Awaited<ReturnType<typeof fetchPostBySlugServer>>;
-			await context.client.cancelQueries({ queryKey: ["fetch-post", slug] });
+			await context.client.cancelQueries({ queryKey: ["fetch-post", postId] });
 
-			context.client.setQueryData(["fetch-post", slug], (old: posts) =>
+			context.client.setQueryData(["fetch-post", postId], (old: posts) =>
 				old.map((item) => {
 					if (item.id === postId && !item.likedByUser) {
 						return { ...item, likeCount: Number(item.likeCount) + 1, likedByUser: true };

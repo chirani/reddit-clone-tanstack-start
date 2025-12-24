@@ -41,7 +41,9 @@ function RouteComponent() {
 	const { title, body, username, slug, likedByUser, id, likeCount, communityId } = data[0];
 	const comments = commentData?.pages.flatMap((p) => p.results) ?? [];
 	const toggleLike = () =>
-		likedByUser ? unlikePost({ postId: id, slug }) : likePost({ postId: id, slug });
+		likedByUser
+			? unlikePost({ postId: id, slug })
+			: likePost({ postId: id, location: "post-page" });
 
 	return (
 		<div className="main p-4">

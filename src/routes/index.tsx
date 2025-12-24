@@ -26,7 +26,11 @@ function App() {
 	const { data, fetchNextPage, isFetching, hasNextPage } = useSuspenseInfiniteQuery(
 		fetchPostsPagintedQueryOptions(),
 	);
-	const posts = data?.pages.flatMap((p) => p.results) ?? [];
+
+	const posts =
+		data?.pages.flatMap((p, index) =>
+			p.results.map((result) => ({ ...result, pageNumber: index })),
+		) ?? [];
 
 	return (
 		<main className="main flex flex-col items-stretch">

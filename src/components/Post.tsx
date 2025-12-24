@@ -10,9 +10,10 @@ interface PostProps {
 	username: string | null;
 	communityId: string | null;
 	likeCount: number;
+	likedByUser: boolean;
+	pageNumber?: number;
 	showCommunity?: boolean;
 	showUsername?: boolean;
-	likedByUser: boolean;
 }
 
 const Post = ({
@@ -23,12 +24,14 @@ const Post = ({
 	likedByUser,
 	username = "",
 	communityId = "",
+	pageNumber = 0,
 	showCommunity = false,
 	showUsername = false,
 }: PostProps) => {
 	const { mutate: likePost } = useLikePost();
 	const { mutate: unlikePost } = useUnlikePost();
-	const toggleLike = () => (likedByUser ? unlikePost({ postId: id }) : likePost({ postId: id }));
+	const toggleLike = () =>
+		likedByUser ? unlikePost({ postId: id }) : likePost({ postId: id, pageNumber });
 
 	return (
 		<div className="mb-0 bg-base-100 border-b border-b-base-200">
