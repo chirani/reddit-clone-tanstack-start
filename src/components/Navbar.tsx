@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Ellipsis, PlusCircleIcon } from "lucide-react";
+import { Bell, Ellipsis, PlusCircleIcon } from "lucide-react";
 import type React from "react";
 import { useAuthQuery, useSignOut } from "@/lib/auth/hooks";
 
@@ -9,7 +9,7 @@ const Navbar: React.FC = () => {
 	const isAuthenticated = !!data?.user;
 
 	return (
-		<div className="navbar bg-base-100 shadow-sm sticky top-0 z-400">
+		<nav className="navbar bg-base-100 shadow-sm sticky top-0 z-400">
 			<div className="navbar-start">
 				<Link type="button" className="btn btn-ghost" to="/">
 					<img src="/community.svg" alt="Icon" width="100" />
@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
 				signOut={signOut}
 				isAuthenticated={isAuthenticated}
 			/>
-		</div>
+		</nav>
 	);
 };
 
@@ -44,6 +44,12 @@ const DesktopRightMenu: React.FC<RightMenuProps> = ({
 		<div className="hidden md:flex navbar-end gap-3">
 			{isAuthenticated && (
 				<>
+					<div className="indicator">
+						<button className="btn btn-ghost" type="button" title="notification">
+							<span className="indicator-item status status-error animate-pulse" />
+							<Bell />
+						</button>
+					</div>
 					<Link to="/post/create">
 						<button type="button" className="btn btn-primary w-full">
 							Create A Post
@@ -75,6 +81,12 @@ const DesktopRightMenu: React.FC<RightMenuProps> = ({
 			)}
 			{!isAuthenticated && (
 				<>
+					<div className="indicator">
+						<button className="btn btn-ghost" type="button" title="notification">
+							<span className="indicator-item status status-error animate-pulse" />
+							<Bell />
+						</button>
+					</div>
 					<Link to="/signup">
 						<button type="button" className="btn">
 							Signup
@@ -100,6 +112,12 @@ const MobileRightMenu: React.FC<RightMenuProps> = ({
 		<div className="flex md:hidden navbar-end gap-3">
 			{isAuthenticated && (
 				<>
+					<div className="indicator">
+						<button className="btn btn-ghost" type="button" title="notification">
+							<span className="indicator-item status status-error animate-pulse" />
+							<Bell />
+						</button>
+					</div>
 					<Link to="/post/create">
 						<button type="button" className="btn btn-primary">
 							<PlusCircleIcon />
