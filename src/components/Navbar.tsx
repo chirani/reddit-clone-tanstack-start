@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Bell, Ellipsis, PlusCircleIcon } from "lucide-react";
+import { Bell, Menu, PlusCircleIcon } from "lucide-react";
 import type React from "react";
 import { useAuthQuery, useSignOut } from "@/lib/auth/hooks";
 
@@ -56,7 +56,9 @@ const DesktopRightMenu: React.FC<RightMenuProps> = ({
 						</button>
 					</Link>
 					<details open={false} className="dropdown dropdown-end">
-						<summary className="btn m-1">More...</summary>
+						<summary className="btn btn-ghost m-1">
+							<Menu className="text-primary" />
+						</summary>
 						<ul className="menu dropdown-content bg-base-100 rounded-box z-1 mt-1 w-52 p-2 shadow-sm gap-2.5">
 							<li>
 								<Link to="/community/create" className="btn btn-sm btn-ghost">
@@ -124,8 +126,8 @@ const MobileRightMenu: React.FC<RightMenuProps> = ({
 						</button>
 					</Link>
 					<details open={false} className="dropdown dropdown-end">
-						<summary className="btn m-1">
-							<Ellipsis />
+						<summary className="btn btn-ghost m-1">
+							<Menu className="text-primary" />
 						</summary>
 						<ul className="menu dropdown-content bg-base-100 rounded-box z-1 mt-1 w-52 p-2 shadow-sm gap-2.5">
 							<li>
