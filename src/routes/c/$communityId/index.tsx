@@ -37,7 +37,11 @@ function RouteComponent() {
 	const { mutate: joinCommunity, isPending: isJoinPending } = useJoinCommunity();
 	const { mutate: leaveCommunity, isPending: isLeavePending } = useLeaveCommunity();
 
-	const posts = data?.pages.flatMap((p) => p.results) ?? [];
+	const posts =
+		data?.pages.flatMap((p, index) =>
+			p.results.map((result) => ({ ...result, pageNumber: index })),
+		) ?? [];
+
 	return (
 		<div className="main">
 			<div className="card bg-base-100 border-2 border-base-200 m-6">
@@ -63,7 +67,7 @@ function RouteComponent() {
 				</div>
 			</div>
 			{posts.map((post) => (
-				<Post key={post.id} {...post} showUsername />
+				<Post key={post.id} {...post} likeLocation="community-page" showUsername />
 			))}
 		</div>
 	);

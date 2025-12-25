@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { MessageSquareText, ThumbsUp } from "lucide-react";
-import { useLikePost, useUnlikePost } from "@/lib/posts/hooks";
+import { type likeLocation, useLikePost, useUnlikePost } from "@/lib/posts/hooks";
 
 interface PostProps {
 	id: string;
@@ -14,6 +14,7 @@ interface PostProps {
 	pageNumber?: number;
 	showCommunity?: boolean;
 	showUsername?: boolean;
+	likeLocation?: likeLocation;
 }
 
 const Post = ({
@@ -27,11 +28,15 @@ const Post = ({
 	pageNumber = 0,
 	showCommunity = false,
 	showUsername = false,
+	likeLocation = "main-page",
 }: PostProps) => {
 	const { mutate: likePost } = useLikePost();
 	const { mutate: unlikePost } = useUnlikePost();
+	communityId = communityId ?? "";
 	const toggleLike = () =>
-		likedByUser ? unlikePost({ postId: id }) : likePost({ postId: id, pageNumber });
+		likedByUser
+			? unlikePost({ postId: id, location: likeLocation, pageNumber, communityId })
+			: likePost({ postId: id, location: likeLocation, pageNumber, communityId });
 
 	return (
 		<div className="mb-0 bg-base-100 border-b border-b-base-200">

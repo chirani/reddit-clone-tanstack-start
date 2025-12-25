@@ -43,7 +43,7 @@ export const fetchPostsPagintedQueryOptions = () =>
 export const fetchPostsByCommunityPagintedQueryOptions = (communityId: string) =>
 	infiniteQueryOptions({
 		initialPageParam: 0,
-		queryKey: ["fetch-posts-community-paginated"],
+		queryKey: ["fetch-posts-community-paginated", communityId],
 		queryFn: async ({ pageParam }) => {
 			const results = await fetchPostByCommunityServer({
 				data: { offset: pageParam, limit: 3, communityId },
@@ -59,13 +59,20 @@ export const fetchPostBySlugQueryOptions = (postIdOrSlug: string) =>
 		queryFn: async () => await fetchPostBySlugServer({ data: { postIdOrSlug } }),
 	});
 
+export type likeLocation = "main-page" | "post-page" | "community-page";
+
 export const useLikePost = () => {
-	type location = "main-page" | "post-page" | "community-page";
 	return useMutation({
-		mutationFn: async ({ postId }: { postId: string; location?: location; pageNumber?: number }) =>
-			await addLikeServer({ data: { postId } }),
+		mutationFn: async ({
+			postId,
+		}: {
+			postId: string;
+			location?: likeLocation;
+			pageNumber?: number;
+			communityId?: string;
+		}) => await addLikeServer({ data: { postId } }),
 		mutationKey: ["add-like"],
-		onMutate: async ({ postId, pageNumber = 0, location = "main-page" }, context) => {
+		onMutate: async ({ postId, pageNumber = 0, location = "main-page", communityId }, context) => {
 			if (location === "main-page") {
 				await context.client.cancelQueries({ queryKey: ["fetch-posts-paginated"] });
 				type postsPaginated = Awaited<ReturnType<typeof fetchPostsPaginatedServer>>;
@@ -95,67 +102,164 @@ export const useLikePost = () => {
 				return;
 			}
 
-			type posts = Awaited<ReturnType<typeof fetchPostBySlugServer>>;
-			await context.client.cancelQueries({ queryKey: ["fetch-post", postId] });
+			type communityPostsPaginated = Awaited<ReturnType<typeof fetchPostsPaginatedServer>>;
+			if (location === "community-page") {
+				await context.client.cancelQueries({
+					queryKey: ["fetch-posts-community-paginated", communityId],
+				});
 
-			context.client.setQueryData(["fetch-post", postId], (old: posts) =>
-				old.map((item) => {
-					if (item.id === postId && !item.likedByUser) {
-						return { ...item, likeCount: Number(item.likeCount) + 1, likedByUser: true };
-					}
-					return item;
-				}),
-			);
+				context.client.setQueryData<InfiniteData<communityPostsPaginated>>(
+					["fetch-posts-community-paginated", communityId],
+					(old) => {
+						if (!old) return old;
+
+						const newPages = old.pages.map((page, index) => {
+							if (index !== pageNumber) return page;
+
+							return {
+								...page,
+								results: page.results.map((item) => {
+									if (item.id === postId && !item.likedByUser) {
+										return { ...item, likeCount: Number(item.likeCount) + 1, likedByUser: true };
+									}
+									return item;
+								}),
+							};
+						});
+
+						return { ...old, pages: newPages };
+					},
+				);
+				return;
+			}
+
+			type posts = Awaited<ReturnType<typeof fetchPostBySlugServer>>;
+			if (location === "post-page") {
+				await context.client.cancelQueries({ queryKey: ["fetch-post", postId] });
+
+				context.client.setQueryData(["fetch-post", postId], (old: posts) =>
+					old.map((item) => {
+						if (item.id === postId && !item.likedByUser) {
+							return { ...item, likeCount: Number(item.likeCount) + 1, likedByUser: true };
+						}
+						return item;
+					}),
+				);
+			}
 		},
-		onError(_data, _variables, _onMutateResult, context) {
-			context.client.invalidateQueries({ queryKey: ["fetch-posts"] });
+		onError(_data, { location, postId, communityId }, _onMutateResult, context) {
+			if (location === "main-page") {
+				context.client.invalidateQueries({ queryKey: ["fetch-posts"] });
+			}
+			if (location === "community-page") {
+				context.client.invalidateQueries({
+					queryKey: ["fetch-posts-community-paginated", communityId],
+				});
+			}
+			if (location === "post-page") {
+				context.client.invalidateQueries({ queryKey: ["fetch-post", postId] });
+			}
 		},
 	});
 };
 
 export const useUnlikePost = () => {
 	return useMutation({
-		mutationFn: async ({ postId }: { postId: string; slug?: string }) =>
-			await removeLikeServer({ data: { postId } }),
+		mutationFn: async ({
+			postId,
+		}: {
+			postId: string;
+			location?: likeLocation;
+			pageNumber?: number;
+			communityId?: string;
+		}) => await removeLikeServer({ data: { postId } }),
 		mutationKey: ["remove-like"],
-		onMutate: async ({ postId, slug }, context) => {
-			if (!slug) {
+		onMutate: async ({ postId, location = "main-page", pageNumber = 0, communityId }, context) => {
+			if (location === "main-page") {
 				await context.client.cancelQueries({ queryKey: ["fetch-posts-paginated"] });
-				type Posts = Awaited<ReturnType<typeof fetchPostsPaginatedServer>>;
+				type postsPaginated = Awaited<ReturnType<typeof fetchPostsPaginatedServer>>;
 
-				context.client.setQueryData<InfiniteData<Posts>>(["fetch-posts-paginated"], (old) => {
-					if (!old) return old;
-					const newPages = old.pages.map((page) => ({
-						...page,
-						results: page.results.map((item) => {
-							if (item.id === postId && item.likedByUser) {
-								return { ...item, likeCount: Number(item.likeCount) - 1, likedByUser: false };
-							}
-							return item;
-						}),
-					}));
+				context.client.setQueryData<InfiniteData<postsPaginated>>(
+					["fetch-posts-paginated"],
+					(old) => {
+						if (!old) return old;
 
-					return { ...old, pages: newPages };
-				});
+						const newPages = old.pages.map((page, index) => {
+							if (index !== pageNumber) return page;
+
+							return {
+								...page,
+								results: page.results.map((item) => {
+									if (item.id === postId && item.likedByUser) {
+										return { ...item, likeCount: Number(item.likeCount) - 1, likedByUser: false };
+									}
+									return item;
+								}),
+							};
+						});
+
+						return { ...old, pages: newPages };
+					},
+				);
 				return;
 			}
 
-			type posts = Awaited<ReturnType<typeof fetchPostBySlugServer>>;
-			await context.client.cancelQueries({ queryKey: ["fetch-post"] });
+			type communityPostsPaginated = Awaited<ReturnType<typeof fetchPostsPaginatedServer>>;
+			if (location === "community-page") {
+				await context.client.cancelQueries({
+					queryKey: ["fetch-posts-community-paginated", communityId],
+				});
 
-			context.client.setQueryData(["fetch-post", slug], (old: posts) =>
-				old.map((item) => {
-					if (item.id === postId && item.likedByUser) {
-						return { ...item, likeCount: Number(item.likeCount) - 1, likedByUser: false };
-					}
-					return item;
-				}),
-			);
+				context.client.setQueryData<InfiniteData<communityPostsPaginated>>(
+					["fetch-posts-community-paginated", communityId],
+					(old) => {
+						if (!old) return old;
+
+						const newPages = old.pages.map((page, index) => {
+							if (index !== pageNumber) return page;
+
+							return {
+								...page,
+								results: page.results.map((item) => {
+									if (item.id === postId && item.likedByUser) {
+										return { ...item, likeCount: Number(item.likeCount) - 1, likedByUser: false };
+									}
+									return item;
+								}),
+							};
+						});
+
+						return { ...old, pages: newPages };
+					},
+				);
+				return;
+			}
+
+			if (location === "post-page") {
+				type posts = Awaited<ReturnType<typeof fetchPostBySlugServer>>;
+				await context.client.cancelQueries({ queryKey: ["fetch-post"] });
+
+				context.client.setQueryData(["fetch-post", postId], (old: posts) =>
+					old.map((item) => {
+						if (item.id === postId && item.likedByUser) {
+							return { ...item, likeCount: Number(item.likeCount) - 1, likedByUser: false };
+						}
+						return item;
+					}),
+				);
+			}
 		},
-		onError(_data, { slug }, _onMutateResult, context) {
-			context.client.invalidateQueries({ queryKey: ["fetch-posts"] });
-			if (slug) {
-				context.client.invalidateQueries({ queryKey: ["fetch-post", slug] });
+		onError(_data, { location, postId, communityId }, _onMutateResult, context) {
+			if (location === "main-page") {
+				context.client.invalidateQueries({ queryKey: ["fetch-posts"] });
+			}
+			if (location === "community-page") {
+				context.client.invalidateQueries({
+					queryKey: ["fetch-posts-community-paginated", communityId],
+				});
+			}
+			if (location === "post-page") {
+				context.client.invalidateQueries({ queryKey: ["fetch-post", postId] });
 			}
 		},
 	});

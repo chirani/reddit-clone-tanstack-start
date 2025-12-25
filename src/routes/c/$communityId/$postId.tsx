@@ -38,11 +38,11 @@ function RouteComponent() {
 	const { data: commentData } = useSuspenseInfiniteQuery(fetchPostCommentsQueryOpts(postId));
 	const { mutate: likePost } = useLikePost();
 	const { mutate: unlikePost } = useUnlikePost();
-	const { title, body, username, slug, likedByUser, id, likeCount, communityId } = data[0];
+	const { title, body, username, likedByUser, id, likeCount, communityId } = data[0];
 	const comments = commentData?.pages.flatMap((p) => p.results) ?? [];
 	const toggleLike = () =>
 		likedByUser
-			? unlikePost({ postId: id, slug })
+			? unlikePost({ postId: id, location: "post-page" })
 			: likePost({ postId: id, location: "post-page" });
 
 	return (
