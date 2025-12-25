@@ -44,17 +44,17 @@ const DesktopRightMenu: React.FC<RightMenuProps> = ({
 		<div className="hidden md:flex navbar-end gap-3">
 			{isAuthenticated && (
 				<>
+					<Link to="/post/create">
+						<button type="button" className="btn btn-primary w-full">
+							Create A Post
+						</button>
+					</Link>
 					<div className="indicator">
 						<button className="btn btn-ghost" type="button" title="notification">
 							<span className="indicator-item status status-error animate-pulse" />
 							<Bell />
 						</button>
 					</div>
-					<Link to="/post/create">
-						<button type="button" className="btn btn-primary w-full">
-							Create A Post
-						</button>
-					</Link>
 					<details open={false} className="dropdown dropdown-end">
 						<summary className="btn btn-ghost m-1">
 							<Menu className="text-primary" />
@@ -83,17 +83,12 @@ const DesktopRightMenu: React.FC<RightMenuProps> = ({
 			)}
 			{!isAuthenticated && (
 				<>
-					<div className="indicator">
-						<button className="btn btn-ghost" type="button" title="notification">
-							<span className="indicator-item status status-error animate-pulse" />
-							<Bell />
-						</button>
-					</div>
 					<Link to="/signup">
 						<button type="button" className="btn">
 							Signup
 						</button>
 					</Link>
+
 					<Link to="/signin">
 						<button type="button" className="hidden md:visible btn btn-accent">
 							Login
@@ -114,17 +109,17 @@ const MobileRightMenu: React.FC<RightMenuProps> = ({
 		<div className="flex md:hidden navbar-end gap-3">
 			{isAuthenticated && (
 				<>
+					<Link to="/post/create">
+						<button type="button" className="btn btn-primary">
+							<PlusCircleIcon />
+						</button>
+					</Link>
 					<div className="indicator">
 						<button className="btn btn-ghost" type="button" title="notification">
 							<span className="indicator-item status status-error animate-pulse" />
 							<Bell />
 						</button>
 					</div>
-					<Link to="/post/create">
-						<button type="button" className="btn btn-primary">
-							<PlusCircleIcon />
-						</button>
-					</Link>
 					<details open={false} className="dropdown dropdown-end">
 						<summary className="btn btn-ghost m-1">
 							<Menu className="text-primary" />
