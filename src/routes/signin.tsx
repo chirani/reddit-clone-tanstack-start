@@ -36,7 +36,10 @@ function RouteComponent() {
 
 	return (
 		<main className="main">
-			<form onSubmit={onSubmit} className="mx-auto card w-96 bg-base-100 card-lg shadow-sm">
+			<form
+				onSubmit={onSubmit}
+				className="mx-4 sm:mx-auto sm:w-96 card bg-base-100 card-lg shadow-sm"
+			>
 				<div className="card-body gap-3">
 					<h2 className="card-title">Sign In</h2>
 					<input
