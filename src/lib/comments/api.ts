@@ -46,51 +46,28 @@ export const deleteComment = createServerFn({ method: "POST" })
 export const fetchPostComments = createServerFn()
 	.inputValidator(
 		z.object({
-			slug: z.string(),
+			postId: z.string(),
 			limit: z.number().default(3),
 			offset: z.number().default(0),
-			id: z.string().nullable().default(null),
 		}),
 	)
 	.handler(async ({ data }) => {
-		const { limit, offset, id } = data;
+		const { limit, offset, postId } = data;
 
-		async function fetchPosts(postId: string) {
-			const results = await db
-				.select({
-					id: comments.id,
-					username: user.name,
-					comment: comments.comment,
-					createdAt: comments.createdAt,
-				})
-				.from(comments)
-				.leftJoin(user, eq(comments.userId, user.id))
-				.groupBy(comments.id, user.name)
-				.where(eq(comments.postId, postId))
-				.orderBy(desc(comments.createdAt))
-				.limit(limit)
-				.offset(offset);
-
-			return results;
-		}
-
-		if (id !== null) {
-			const results = await fetchPosts(id);
-			return { results, nextOffset: results.length === limit ? offset + limit : null };
-		}
-
-		const postId = await db
-			.select({ id: posts.id })
-			.from(posts)
-			.where(eq(posts.slug, data.slug))
-			.limit(1);
-
-		if (postId.length === 0) {
-			const error = new Error("Post doesn't exist in DB");
-			throw error;
-		}
-
-		const results = await fetchPosts(postId[0].id);
+		const results = await db
+			.select({
+				id: comments.id,
+				username: user.name,
+				comment: comments.comment,
+				createdAt: comments.createdAt,
+			})
+			.from(comments)
+			.leftJoin(user, eq(comments.userId, user.id))
+			.groupBy(comments.id, user.name)
+			.where(eq(comments.postId, postId))
+			.orderBy(desc(comments.createdAt))
+			.limit(limit)
+			.offset(offset);
 
 		return { results, nextOffset: results.length === limit ? offset + limit : null };
 	});
