@@ -20,12 +20,12 @@ export const useRemoveComment = () => {
 	});
 };
 
-export const fetchPostCommentsQueryOpts = (slug: string) => {
+export const fetchPostCommentsQueryOpts = (postId: string) => {
 	return infiniteQueryOptions({
 		initialPageParam: 0,
-		queryKey: ["fetch-comments", slug],
+		queryKey: ["fetch-comments", postId],
 		queryFn: async ({ pageParam }) => {
-			const page = await fetchPostComments({ data: { slug, offset: pageParam, limit: 7 } });
+			const page = await fetchPostComments({ data: { postId, offset: pageParam, limit: 7 } });
 			return page;
 		},
 		getNextPageParam: (lastPage) => lastPage.nextOffset,
