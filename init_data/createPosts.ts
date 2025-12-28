@@ -1,5 +1,8 @@
 import * as fs from "node:fs/promises";
-import { generateSlug, type posts } from "../src/db/schema.ts";
+import { isNull } from "drizzle-orm";
+import { db } from "../src/db/index.ts";
+import { communities, generateSlug, posts, user } from "../src/db/schema.ts";
+
 export type Post = {
 	title: string;
 	body: string;
@@ -19,3 +22,24 @@ export const postFormatted: postType[] = typedPostList.map((p) => ({
 	body: p.body,
 	userId: "",
 }));
+
+(async () => {
+	await db.delete(posts).where(isNull(posts.communityId));
+	const createCommunities = await db.select().from(communities);
+	const communityNumber = createCommunities.length;
+	const createdUsers = await db.select().from(user);
+
+	const userNumber = createdUsers.length;
+	console.log(userNumber);
+	const postsList: postType[] = postFormatted.map((pf) => {
+		const randomUser = Math.floor(Math.random() * userNumber);
+		const randomCommunity = Math.floor(Math.random() * communityNumber);
+		return {
+			...pf,
+			userId: createdUsers[randomUser].id,
+			communityId: createCommunities[randomCommunity].id,
+		};
+	});
+
+	await db.insert(posts).values(postsList).returning();
+})();

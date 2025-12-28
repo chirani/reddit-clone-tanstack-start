@@ -13,13 +13,7 @@ const userList = JSON.parse(
 const typedUsers = userList as UserCredential[];
 
 export const createUsers = async () => {
-	const usersList = typedUsers.map((u) => ({
-		password: u.password,
-		email: u.email,
-		name: u.name,
-	}));
-
-	usersList.forEach(async (u) => {
+	typedUsers.forEach(async (u) => {
 		try {
 			const res = await auth.api.signUpEmail({
 				body: {
