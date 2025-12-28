@@ -90,7 +90,7 @@ const DesktopRightMenu: React.FC<RightMenuProps> = ({
 					</Link>
 
 					<Link to="/signin">
-						<button type="button" className="hidden md:visible btn btn-accent">
+						<button type="button" className="btn btn-accent">
 							Login
 						</button>
 					</Link>
