@@ -34,7 +34,7 @@ export const fetchPostsPagintedQueryOptions = () =>
 		initialPageParam: 0,
 		queryKey: ["fetch-posts-paginated"],
 		queryFn: async ({ pageParam }) => {
-			const results = await fetchPostsPaginatedServer({ data: { offset: pageParam, limit: 3 } });
+			const results = await fetchPostsPaginatedServer({ data: { offset: pageParam, limit: 6 } });
 			return results;
 		},
 		getNextPageParam: (lastPage) => lastPage.nextOffset,
