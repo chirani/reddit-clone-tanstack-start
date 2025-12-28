@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { and, desc, eq } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
-import { comments, posts, user } from "@/db/schema";
+import { comments, user } from "@/db/schema";
 import { userAuthMiddleware } from "../auth/api";
 
 export const postComment = createServerFn({ method: "POST" })

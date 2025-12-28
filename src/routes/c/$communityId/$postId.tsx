@@ -1,5 +1,5 @@
 import { useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { MessageSquareText, Network, ThumbsUp, User } from "lucide-react";
 import Comment from "@/components/Comment";
 import CommentInput from "@/components/CommentInput";
@@ -9,37 +9,23 @@ import { fetchPostBySlugQueryOptions, useLikePost, useUnlikePost } from "@/lib/p
 export const Route = createFileRoute("/c/$communityId/$postId")({
 	component: RouteComponent,
 	loader: async ({ params, context }) => {
-		const { postId, communityId } = params;
+		const { postId } = params;
 		const posts = await context.queryClient.ensureQueryData(fetchPostBySlugQueryOptions(postId));
-		if (posts[0].communityId !== communityId) {
-			throw notFound();
-		}
 		await context.queryClient.ensureInfiniteQueryData(fetchPostCommentsQueryOpts(postId));
 		return { post: posts[0] };
 	},
 	notFoundComponent: NotFoundComponent,
-	head: ({ params, loaderData }) => {
-		const post = loaderData?.post;
-		const title = post?.title ?? params.postId;
-
-		return {
-			meta: [
-				{
-					title: `${title} - Community`,
-				},
-			],
-		};
-	},
 });
 
 function RouteComponent() {
 	const { postId } = Route.useParams();
 	const { data } = useSuspenseQuery(fetchPostBySlugQueryOptions(postId));
 	const { data: commentData } = useSuspenseInfiniteQuery(fetchPostCommentsQueryOpts(postId));
+	const comments = commentData?.pages.flatMap((p) => p.results) ?? [];
+	const { title, body, username, likedByUser, id, likeCount, communityId } = data[0];
 	const { mutate: likePost } = useLikePost();
 	const { mutate: unlikePost } = useUnlikePost();
-	const { title, body, username, likedByUser, id, likeCount, communityId } = data[0];
-	const comments = commentData?.pages.flatMap((p) => p.results) ?? [];
+
 	const toggleLike = () =>
 		likedByUser
 			? unlikePost({ postId: id, location: "post-page" })
