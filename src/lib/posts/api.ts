@@ -111,9 +111,10 @@ export const fetchPostsPaginatedServer = createServerFn()
 			.leftJoin(user, eq(posts.userId, user.id))
 			.leftJoin(likes, eq(posts.id, likes.postId))
 			.groupBy(posts.id, user.name)
-			.orderBy(desc(posts.createdAt))
-			.limit(limit)
-			.offset(offset);
+			.orderBy(posts.id)
+			//	.orderBy(desc(posts.createdAt))
+			.offset(offset)
+			.limit(limit);
 
 		const filteredResults = results.filter((item) => {
 			return item.username !== null && item.communityId !== null;
