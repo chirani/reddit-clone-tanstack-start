@@ -106,7 +106,7 @@ const MobileRightMenu: React.FC<RightMenuProps> = ({
 	isSignouPending,
 }) => {
 	return (
-		<div className="flex md:hidden navbar-end gap-3">
+		<div className="flex md:hidden navbar-end gap-0 sm:gap-3">
 			{isAuthenticated && (
 				<>
 					<Link to="/post/create">
