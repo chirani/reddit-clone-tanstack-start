@@ -3,7 +3,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { and, desc, eq, or, sql } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
-import { generateSlug, likes, posts, user } from "@/db/schema";
+import { comments, generateSlug, likes, posts, user } from "@/db/schema";
 import { userAuthMiddleware } from "@/lib/auth/api";
 
 export const postSchema = z.object({
@@ -147,6 +147,13 @@ export const fetchPostBySlugServer = createServerFn()
 				createdAt: posts.createdAt,
 				likedByUser: sql<boolean>`BOOL_OR(${eq(likes.userId, userId)})`,
 				likeCount: sql<number>`COUNT(${likes.postId})`,
+				commentCount: sql<number>`
+					(
+						SELECT COUNT(*)
+						FROM ${comments}
+						WHERE ${comments.postId} = ${postIdOrSlug}
+					)
+        		`,
 			})
 			.from(posts)
 			.leftJoin(likes, eq(posts.id, likes.postId))

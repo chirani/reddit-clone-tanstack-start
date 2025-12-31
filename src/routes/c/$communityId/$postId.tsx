@@ -14,6 +14,20 @@ export const Route = createFileRoute("/c/$communityId/$postId")({
 		await context.queryClient.ensureInfiniteQueryData(fetchPostCommentsQueryOpts(postId));
 		return { post: posts[0] };
 	},
+	head: ({ loaderData, params }) => {
+		const post = loaderData?.post;
+		const psotTitle = post?.title ?? params?.postId;
+
+		return {
+			meta: [
+				{ name: "og:title", content: psotTitle },
+				{ name: "twitter:title", content: psotTitle },
+				{
+					title: `${psotTitle} - Community`,
+				},
+			],
+		};
+	},
 	notFoundComponent: NotFoundComponent,
 });
 
@@ -22,7 +36,7 @@ function RouteComponent() {
 	const { data } = useSuspenseQuery(fetchPostBySlugQueryOptions(postId));
 	const { data: commentData } = useSuspenseInfiniteQuery(fetchPostCommentsQueryOpts(postId));
 	const comments = commentData?.pages.flatMap((p) => p.results) ?? [];
-	const { title, body, username, likedByUser, id, likeCount, communityId } = data[0];
+	const { title, body, username, likedByUser, id, likeCount, communityId, commentCount } = data[0];
 	const { mutate: likePost } = useLikePost();
 	const { mutate: unlikePost } = useUnlikePost();
 
@@ -66,13 +80,13 @@ function RouteComponent() {
 					<ThumbsUp className="text-md" />
 				</button>
 				<button type="button" className="btn btn-ghost rounded-full text-base-content">
-					{0}
+					{Number(commentCount)}
 					<MessageSquareText className="text-md" />
 				</button>
 			</div>
-			<hr className="my-4 text-base-content" />
+			<hr className="my-4 text-base-300" />
 			<CommentInput postId={id} />
-			<section className="flex flex-col gap-3 mt-4">
+			<section className="flex flex-col mt-4">
 				{comments.map((comment) => (
 					<Comment key={comment.id} comment={comment.comment} username={comment.username ?? ""} />
 				))}
