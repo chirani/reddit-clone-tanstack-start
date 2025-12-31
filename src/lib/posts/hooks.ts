@@ -6,7 +6,6 @@ import {
 	fetchPostByCommunityServer,
 	fetchPostBySlugServer,
 	fetchPostsPaginatedServer,
-	fetchPostsServer,
 	removeLikeServer,
 } from "./api";
 
@@ -20,15 +19,6 @@ export const useCreatePost = () => {
 	});
 };
 
-export const fetchPostsQueryOptions = () =>
-	queryOptions({
-		queryKey: ["fetch-posts"],
-		queryFn: async () => {
-			const results = await fetchPostsServer();
-			return results;
-		},
-	});
-
 export const fetchPostsPagintedQueryOptions = () =>
 	infiniteQueryOptions({
 		initialPageParam: 0,
@@ -38,6 +28,7 @@ export const fetchPostsPagintedQueryOptions = () =>
 			return results;
 		},
 		getNextPageParam: (lastPage) => lastPage.nextOffset,
+		staleTime: 600_000,
 	});
 
 export const fetchPostsByCommunityPagintedQueryOptions = (communityId: string) =>
