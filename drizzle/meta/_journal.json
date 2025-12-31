@@ -120,6 +120,13 @@
       "when": 1766341686867,
       "tag": "0016_thick_harry_osborn",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1767151280709,
+      "tag": "0017_purple_proudstar",
+      "breakpoints": true
     }
   ]
 }

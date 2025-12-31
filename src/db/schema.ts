@@ -1,5 +1,13 @@
 import { sql } from "drizzle-orm";
-import { pgEnum, pgTable, primaryKey, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import {
+	integer,
+	pgEnum,
+	pgTable,
+	primaryKey,
+	text,
+	timestamp,
+	varchar,
+} from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
 import { account, session, user, verification } from "../../auth-schema.ts";
 
@@ -32,6 +40,8 @@ export const posts = pgTable("posts", {
 	slug: text("slug").notNull(),
 	body: text("body").notNull(),
 	communityId: text("community_id").references(() => communities.id),
+	likeCount: integer("like_count").default(0),
+	commentCount: integer("comment_count").default(0),
 	...timestamps,
 });
 
@@ -50,6 +60,7 @@ export const communities = pgTable("communities", {
 	title: varchar("title", { length: 128 }),
 	description: varchar("description", { length: 512 }).notNull(),
 	tags: varchar("tags").array().notNull().default([]),
+	membersCount: integer("member_count").default(0),
 	...timestamps,
 });
 
