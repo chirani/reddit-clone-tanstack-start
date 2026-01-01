@@ -136,6 +136,27 @@ export const fetchPostBySlugServer = createServerFn()
 	.handler(async ({ data, context }) => {
 		const userId = context.user.id;
 		const { postIdOrSlug } = data;
+
+		await db
+			.update(posts)
+			.set({
+				likeCount: sql<number>`
+				(
+					SELECT COUNT(*)
+					FROM ${likes}
+					WHERE ${likes.postId} = ${postIdOrSlug}
+				)
+			`,
+				commentCount: sql<number>`
+				(
+					SELECT COUNT(*)
+					FROM ${comments}
+					WHERE ${comments.postId} = ${postIdOrSlug}
+				)
+			`,
+			})
+			.returning();
+
 		const results = await db
 			.select({
 				id: posts.id,
@@ -146,14 +167,8 @@ export const fetchPostBySlugServer = createServerFn()
 				communityId: posts.communityId,
 				createdAt: posts.createdAt,
 				likedByUser: sql<boolean>`BOOL_OR(${eq(likes.userId, userId)})`,
-				likeCount: sql<number>`COUNT(${likes.postId})`,
-				commentCount: sql<number>`
-					(
-						SELECT COUNT(*)
-						FROM ${comments}
-						WHERE ${comments.postId} = ${postIdOrSlug}
-					)
-        		`,
+				likeCount: posts.likeCount,
+				commentCount: posts.commentCount,
 			})
 			.from(posts)
 			.leftJoin(likes, eq(posts.id, likes.postId))
