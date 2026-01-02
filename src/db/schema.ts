@@ -40,8 +40,8 @@ export const posts = pgTable("posts", {
 	slug: text("slug").notNull(),
 	body: text("body").notNull(),
 	communityId: text("community_id").references(() => communities.id),
-	likeCount: integer("like_count").default(0),
-	commentCount: integer("comment_count").default(0),
+	likeCount: integer("like_count").default(0).notNull(),
+	commentCount: integer("comment_count").default(0).notNull(),
 	...timestamps,
 });
 

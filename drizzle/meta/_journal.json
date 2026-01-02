@@ -127,6 +127,13 @@
       "when": 1767151280709,
       "tag": "0017_purple_proudstar",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1767318475224,
+      "tag": "0018_small_korg",
+      "breakpoints": true
     }
   ]
 }
