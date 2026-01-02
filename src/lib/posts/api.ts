@@ -104,8 +104,9 @@ export const fetchPostsPaginatedServer = createServerFn()
 				username: user.name,
 				communityId: posts.communityId,
 				createdAt: posts.createdAt,
+				likeCount: posts.likeCount,
+				commentCount: posts.commentCount,
 				likedByUser: sql<boolean>`BOOL_OR(${eq(likes.userId, userId)})`,
-				likeCount: sql<number>`COUNT(${likes.postId})`,
 			})
 			.from(posts)
 			.leftJoin(user, eq(posts.userId, user.id))
@@ -155,6 +156,7 @@ export const fetchPostBySlugServer = createServerFn()
 				)
 			`,
 			})
+			.where(eq(posts.id, postIdOrSlug))
 			.returning();
 
 		const results = await db
@@ -207,7 +209,8 @@ export const fetchPostByCommunityServer = createServerFn()
 				communityId: posts.communityId,
 				createdAt: posts.createdAt,
 				likedByUser: sql<boolean>`BOOL_OR(${eq(likes.userId, userId)})`,
-				likeCount: sql<number>`COUNT(${likes.postId})`,
+				likeCount: posts.likeCount,
+				commentCount: posts.commentCount,
 			})
 			.from(posts)
 			.leftJoin(likes, eq(posts.id, likes.postId))

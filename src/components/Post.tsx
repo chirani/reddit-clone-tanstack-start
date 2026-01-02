@@ -10,6 +10,7 @@ interface PostProps {
 	username: string | null;
 	communityId: string | null;
 	likeCount: number;
+	commentCount: number;
 	likedByUser: boolean;
 	pageNumber?: number;
 	showCommunity?: boolean;
@@ -23,6 +24,7 @@ const Post = ({
 	body,
 	likeCount,
 	likedByUser,
+	commentCount,
 	username = "",
 	communityId = "",
 	pageNumber = 0,
@@ -66,7 +68,7 @@ const Post = ({
 					<ThumbsUp className="text-md" />
 				</button>
 				<button type="button" className="btn btn-ghost rounded-full text-base-content">
-					{0}
+					{commentCount}
 					<MessageSquareText className="text-md" />
 				</button>
 			</div>
@@ -95,4 +97,5 @@ export const PostMetaData = ({
 		</div>
 	);
 };
+
 export default Post;
