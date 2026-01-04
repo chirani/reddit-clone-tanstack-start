@@ -1,6 +1,6 @@
 import { notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { and, desc, eq, or, sql } from "drizzle-orm";
+import { desc, eq, or, sql } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
 import { comments, generateSlug, likes, posts, user } from "@/db/schema";
@@ -24,37 +24,6 @@ export const createPostServer = createServerFn({ method: "POST" })
 			.insert(posts)
 			.values({ userId, body, title, communityId, slug: generatedSlug, id: generatedSlug })
 			.returning();
-
-		return results;
-	});
-
-export const removeLikeServer = createServerFn({ method: "POST" })
-	.inputValidator(
-		z.object({
-			postId: z.string(),
-		}),
-	)
-	.middleware([userAuthMiddleware])
-	.handler(async ({ context, data }) => {
-		const userId = context.user.id;
-		const results = await db
-			.delete(likes)
-			.where(and(eq(likes.postId, data.postId), eq(likes.userId, userId)))
-			.returning();
-
-		return results;
-	});
-
-export const addLikeServer = createServerFn({ method: "POST" })
-	.inputValidator(
-		z.object({
-			postId: z.string(),
-		}),
-	)
-	.middleware([userAuthMiddleware])
-	.handler(async ({ context, data }) => {
-		const userId = context.user.id;
-		const results = await db.insert(likes).values({ postId: data.postId, userId }).returning();
 
 		return results;
 	});

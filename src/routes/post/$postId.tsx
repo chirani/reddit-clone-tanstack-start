@@ -4,7 +4,8 @@ import { MessageSquareText, ThumbsUp } from "lucide-react";
 import Comment from "@/components/Comment";
 import CommentInput from "@/components/CommentInput";
 import { fetchPostCommentsQueryOpts } from "@/lib/comments/hooks";
-import { fetchPostBySlugQueryOptions, useLikePost, useUnlikePost } from "@/lib/posts/hooks";
+import { useLikePost, useUnlikePost } from "@/lib/likes/hooks";
+import { fetchPostBySlugQueryOptions } from "@/lib/posts/hooks";
 
 export const Route = createFileRoute("/post/$postId")({
 	component: RouteComponent,

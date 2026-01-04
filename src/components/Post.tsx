@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { MessageSquareText, ThumbsUp } from "lucide-react";
-import { type likeLocation, useLikePost, useUnlikePost } from "@/lib/posts/hooks";
+import { type likeLocation, useLikePost, useUnlikePost } from "@/lib/likes/hooks";
 
 interface PostProps {
 	id: string;
