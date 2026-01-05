@@ -15,12 +15,12 @@ const typedUsers = userList as UserCredential[];
 export const createUsers = async () => {
 	typedUsers.forEach(async (u) => {
 		try {
-			const res = await auth.api.signUpEmail({
+			await auth.api.signUpEmail({
 				body: {
 					...u,
 				},
 			});
-			console.log("Sign up successful:", res);
+			console.log("Sign up successful");
 		} catch (error) {
 			console.log("Sign up failed:", error);
 		}
