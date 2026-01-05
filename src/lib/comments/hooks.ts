@@ -12,7 +12,7 @@ import type {
 import { deleteComment, fetchPostComments, postComment } from "./api";
 
 export const usePostComment = () => {
-	const { updateCommentCountClient } = useUpdateCommentCount();
+	const { updateCommentCountClient, onCommentFail } = useUpdateCommentCount();
 	return useMutation({
 		mutationKey: ["post-comment"],
 		mutationFn: async ({ postId, comment }: { postId: string; comment: string; slug?: string }) =>
@@ -23,6 +23,9 @@ export const usePostComment = () => {
 
 		onSuccess: (_data, _params, _onMutateResult, context) => {
 			context.client.invalidateQueries({ queryKey: ["fetch-comments"] });
+		},
+		onError(_error, { postId }) {
+			onCommentFail(postId, "post-page");
 		},
 	});
 };
@@ -132,5 +135,23 @@ export const useUpdateCommentCount = () => {
 		}
 	};
 
-	return { updateCommentCountClient };
+	const onCommentFail = (
+		postId: string,
+		commentLocation: CommentLocation = "main-page",
+		communityId: string = "",
+	) => {
+		if (commentLocation === "main-page") {
+			queryClient.invalidateQueries({ queryKey: ["fetch-posts"] });
+		}
+		if (commentLocation === "community-page") {
+			queryClient.invalidateQueries({
+				queryKey: ["fetch-posts-community-paginated", communityId],
+			});
+		}
+		if (commentLocation === "post-page") {
+			queryClient.invalidateQueries({ queryKey: ["fetch-post", postId] });
+		}
+	};
+
+	return { updateCommentCountClient, onCommentFail };
 };
