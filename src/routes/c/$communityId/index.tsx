@@ -1,5 +1,7 @@
 import { useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 import Post from "@/components/Post";
 import {
 	fetchCommunityMetadataOpts,
@@ -33,9 +35,20 @@ export const Route = createFileRoute("/c/$communityId/")({
 function RouteComponent() {
 	const { communityId } = Route.useParams();
 	const { data: communityData } = useSuspenseQuery(fetchCommunityMetadataOpts(communityId));
-	const { data } = useSuspenseInfiniteQuery(fetchPostsByCommunityPagintedQueryOptions(communityId));
+	const { data, fetchNextPage, isFetching, hasNextPage } = useSuspenseInfiniteQuery(
+		fetchPostsByCommunityPagintedQueryOptions(communityId),
+	);
 	const { mutate: joinCommunity, isPending: isJoinPending } = useJoinCommunity();
 	const { mutate: leaveCommunity, isPending: isLeavePending } = useLeaveCommunity();
+
+	const { ref: inViewRef, inView } = useInView({
+		threshold: 0,
+	});
+	useEffect(() => {
+		if (!isFetching && inView && hasNextPage) {
+			fetchNextPage();
+		}
+	}, [isFetching, inView, fetchNextPage, hasNextPage]);
 
 	const posts =
 		data?.pages.flatMap((p, index) =>
@@ -66,9 +79,12 @@ function RouteComponent() {
 					</div>
 				</div>
 			</div>
-			{posts.map((post) => (
-				<Post key={post.id} {...post} likeLocation="community-page" showUsername />
-			))}
+			<section>
+				{posts.map((post) => (
+					<Post key={post.id} {...post} likeLocation="community-page" showUsername />
+				))}
+				<div ref={inViewRef} className="p-3" />
+			</section>
 		</div>
 	);
 }

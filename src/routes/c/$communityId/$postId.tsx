@@ -48,11 +48,7 @@ function RouteComponent() {
 	const { mutate: likePost } = useLikePost();
 	const { mutate: unlikePost } = useUnlikePost();
 
-	const { ref: inViewRef, inView } = useInView({
-		/* Optional options */
-		threshold: 0,
-		//triggerOnce: true,
-	});
+	const { ref: inViewRef, inView } = useInView({ threshold: 0 });
 	useEffect(() => {
 		if (!isFetching && inView && hasNextPage) {
 			fetchNextPage();
@@ -109,7 +105,7 @@ function RouteComponent() {
 				{comments.map((comment) => (
 					<Comment key={comment.id} comment={comment.comment} username={comment.username ?? ""} />
 				))}
-				<div className="p-4" ref={inViewRef} hidden={!hasNextPage || isFetching} />
+				<div className="p-4" ref={inViewRef} />
 			</section>
 		</div>
 	);
