@@ -59,13 +59,13 @@ function RouteComponent() {
 		<div className="main">
 			<div className="card bg-base-100 border-2 border-base-200 m-6">
 				<div className="card-body">
-					<h1 className="text-4xl font-bold mb-3">{`c/${communityId}`} </h1>
+					<h1 className="text-2xl md:text-4xl font-bold mb-3 break-all">{`c/${communityId}`}</h1>
 					<p className="text-lg">{communityData.description}</p>
 					<div className="flex flex-row-reverse">
 						<button
 							disabled={isJoinPending || isLeavePending}
-							className={`btn btn-xl${
-								communityData.isCommunityMember ? " btn-ghost" : " btn-accent enabled:animate-pulse"
+							className={`btn btn-xl ${
+								communityData.isCommunityMember ? "btn-ghost" : "btn-accent enabled:animate-pulse"
 							}`}
 							type="button"
 							onMouseDown={() => {

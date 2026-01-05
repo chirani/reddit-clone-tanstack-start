@@ -105,7 +105,7 @@ function RouteComponent() {
 				{comments.map((comment) => (
 					<Comment key={comment.id} comment={comment.comment} username={comment.username ?? ""} />
 				))}
-				<div className="p-4" ref={inViewRef} />
+				<div className="p-4 opacity-0" ref={inViewRef} />
 			</section>
 		</div>
 	);
