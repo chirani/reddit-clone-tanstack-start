@@ -1,6 +1,8 @@
 import { useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { MessageSquareText, Network, ThumbsUp, User } from "lucide-react";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 import Comment from "@/components/Comment";
 import CommentInput from "@/components/CommentInput";
 import { fetchPostCommentsQueryOpts } from "@/lib/comments/hooks";
@@ -35,11 +37,27 @@ export const Route = createFileRoute("/c/$communityId/$postId")({
 function RouteComponent() {
 	const { postId } = Route.useParams();
 	const { data } = useSuspenseQuery(fetchPostBySlugQueryOptions(postId));
-	const { data: commentData } = useSuspenseInfiniteQuery(fetchPostCommentsQueryOpts(postId));
+	const {
+		data: commentData,
+		hasNextPage,
+		isFetching,
+		fetchNextPage,
+	} = useSuspenseInfiniteQuery(fetchPostCommentsQueryOpts(postId));
 	const comments = commentData?.pages.flatMap((p) => p.results) ?? [];
 	const { title, body, username, likedByUser, id, likeCount, communityId, commentCount } = data[0];
 	const { mutate: likePost } = useLikePost();
 	const { mutate: unlikePost } = useUnlikePost();
+
+	const { ref: inViewRef, inView } = useInView({
+		/* Optional options */
+		threshold: 0,
+		//triggerOnce: true,
+	});
+	useEffect(() => {
+		if (!isFetching && inView && hasNextPage) {
+			fetchNextPage();
+		}
+	}, [isFetching, inView, fetchNextPage, hasNextPage]);
 
 	const toggleLike = () =>
 		likedByUser
@@ -91,6 +109,7 @@ function RouteComponent() {
 				{comments.map((comment) => (
 					<Comment key={comment.id} comment={comment.comment} username={comment.username ?? ""} />
 				))}
+				<div className="p-4" ref={inViewRef} hidden={!hasNextPage || isFetching} />
 			</section>
 		</div>
 	);

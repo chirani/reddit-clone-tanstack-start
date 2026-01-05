@@ -1,8 +1,9 @@
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 import Post from "@/components/Post";
 import { fetchPostsPagintedQueryOptions } from "@/lib/posts/hooks";
-
 export const Route = createFileRoute("/")({
 	component: App,
 	beforeLoad: async ({ context }) => {
@@ -26,6 +27,12 @@ function App() {
 	const { data, fetchNextPage, isFetching, hasNextPage } = useSuspenseInfiniteQuery(
 		fetchPostsPagintedQueryOptions(),
 	);
+	const { ref: inViewRef, inView } = useInView({ threshold: 0 });
+	useEffect(() => {
+		if (!isFetching && inView && hasNextPage) {
+			fetchNextPage();
+		}
+	}, [isFetching, inView, fetchNextPage, hasNextPage]);
 
 	const posts =
 		data?.pages.flatMap((p, index) =>
@@ -35,14 +42,7 @@ function App() {
 	return (
 		<main className="main flex flex-col items-stretch">
 			{posts?.length && posts.map((post) => <Post key={post.id} {...post} showCommunity />)}
-			<button
-				hidden={!hasNextPage || isFetching}
-				type="button"
-				onFocus={() => {}}
-				onMouseOver={() => fetchNextPage()}
-			>
-				See More
-			</button>
+			<div className="p-4" ref={inViewRef} hidden={!hasNextPage || isFetching} />
 		</main>
 	);
 }
