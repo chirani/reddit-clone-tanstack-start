@@ -2,11 +2,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
+import z from "zod";
 import { fetchCommunitiesQueryOpts } from "@/lib/community/hooks";
 import { postSchema } from "@/lib/posts/api";
 import { useCreatePost } from "@/lib/posts/hooks";
 
+const createCommunitySearchSchema = z.object({
+	communityId: z.string().catch(""),
+});
+
 export const Route = createFileRoute("/post/create")({
+	validateSearch: (search) => createCommunitySearchSchema.parse(search),
 	component: RouteComponent,
 	beforeLoad: ({ context }) => {
 		const { userSession } = context;
@@ -29,6 +35,7 @@ export const Route = createFileRoute("/post/create")({
 });
 
 function RouteComponent() {
+	const { communityId } = Route.useSearch();
 	const {
 		register,
 		reset,
@@ -48,9 +55,14 @@ function RouteComponent() {
 	return (
 		<main className="main items-center">
 			<div className="card">
-				<form className="card-body gap-3 w-full md:w-[600px] mx-auto" onSubmit={onSubmit}>
+				<form className="card-body gap-3 w-full md:w-150 mx-auto" onSubmit={onSubmit}>
 					<h1 className="card-title">What are you think today?</h1>
-					<select className="select w-full" defaultValue="" {...register("communityId")}>
+					<select
+						className="select w-full"
+						defaultValue={communityId}
+						disabled={Boolean(communityId)}
+						{...register("communityId")}
+					>
 						<option value="" disabled>
 							Select Community
 						</option>

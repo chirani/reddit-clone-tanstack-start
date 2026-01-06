@@ -64,7 +64,7 @@ function RouteComponent() {
 					<div className="flex flex-row-reverse">
 						<button
 							disabled={isJoinPending || isLeavePending}
-							className={`btn btn-xl ${
+							className={`btn btn-lg ${
 								communityData.isCommunityMember ? "btn-ghost" : "btn-accent enabled:animate-pulse"
 							}`}
 							type="button"
