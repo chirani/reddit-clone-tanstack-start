@@ -23,7 +23,8 @@ export const postFormatted: postType[] = typedPostList.map((p) => ({
 	userId: "",
 }));
 
-(async () => {
+export const createPosts = async () => {
+	console.log("[3/5] create posts");
 	await db.delete(posts).where(isNull(posts.communityId));
 	const createCommunities = await db.select().from(communities);
 	const communityNumber = createCommunities.length;
@@ -47,4 +48,4 @@ export const postFormatted: postType[] = typedPostList.map((p) => ({
 	}));
 	await db.insert(communityMemberships).values(communityMemberList);
 	await db.insert(posts).values(postsList).returning();
-})();
+};

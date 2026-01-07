@@ -1,11 +1,12 @@
 import { faker } from "@faker-js/faker";
-import { isNull } from "drizzle-orm";
+import { eq, isNull, sql } from "drizzle-orm";
 import { db } from "../src/db/index.ts";
 import { comments, posts, user } from "../src/db/schema.ts";
 
 type CommentType = typeof comments.$inferInsert;
 
-(async () => {
+export const createComments = async () => {
+	console.log("[4/5] create comments");
 	await db.delete(posts).where(isNull(posts.communityId));
 	const createdPosts = await db.select().from(posts);
 	const postNumber = createdPosts.length;
@@ -31,4 +32,25 @@ type CommentType = typeof comments.$inferInsert;
 	generatedComments.forEach(async (element) => {
 		await db.insert(comments).values(element);
 	});
+};
+
+export const countComments = async () => {
+	const postList = await db.select().from(posts);
+
+	postList.forEach(async (post) => {
+		await db
+			.update(posts)
+			.set({
+				commentCount: sql<number>`
+				(	SELECT COUNT(*)
+					FROM ${comments}
+					WHERE ${comments.postId} = ${post.id}
+				)`,
+			})
+			.where(eq(posts.id, post.id));
+	});
+};
+
+(async () => {
+	await countComments();
 })();

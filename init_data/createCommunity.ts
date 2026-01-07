@@ -1,4 +1,5 @@
 import * as fs from "node:fs/promises";
+import { faker } from "@faker-js/faker";
 import { db } from "../src/db/index.ts";
 import { communities, communityAdmins, user } from "../src/db/schema.ts";
 
@@ -20,7 +21,7 @@ const communityList = JSON.parse(
 );
 const typedCommunityList = communityList as Community[];
 
-export const createCommunities = async () => {
+export const generateCommunities = async () => {
 	type communityType = typeof communities.$inferInsert;
 	const communityListFixed: communityType[] = typedCommunityList.map((c) => ({
 		id: communityIdFormatter(c.title),
@@ -36,18 +37,19 @@ export const createCommunities = async () => {
 	return newCommunitites;
 };
 
-(async () => {
-	const newCommunities = await createCommunities();
+export const createCommunities = async () => {
+	console.log("[2/5] create communities");
+	const newCommunities = await generateCommunities();
 	const users = await db.select().from(user);
 
 	const numberOfUsers = users.length;
 
 	newCommunities.forEach(async (nc) => {
-		const randomNumber = Math.floor(Math.random() * numberOfUsers - 1);
+		const randomNumber = faker.number.int({ min: 0, max: numberOfUsers - 1 });
 		await db.insert(communityAdmins).values({
 			userId: users[randomNumber]?.id,
 			communityId: nc.id,
 			role: "admin",
 		});
 	});
-})();
+};

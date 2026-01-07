@@ -13,6 +13,7 @@ const userList = JSON.parse(
 const typedUsers = userList as UserCredential[];
 
 export const createUsers = async () => {
+	console.log("[1/5] create users");
 	typedUsers.forEach(async (u) => {
 		try {
 			await auth.api.signUpEmail({
@@ -21,11 +22,8 @@ export const createUsers = async () => {
 				},
 			});
 			console.log("Sign up successful");
-		} catch (error) {
-			console.log("Sign up failed:", error);
+		} catch (_error) {
+			console.log("Sign up failed:");
 		}
 	});
 };
-(async () => {
-	await createUsers();
-})();
