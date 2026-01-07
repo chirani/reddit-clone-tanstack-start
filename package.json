@@ -3,8 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "seed-linux": "node init_data\\createUsers.ts && node init_data\\createCommunity.ts && node init_data\\createPosts.ts",
-    "seed-windows": "node init_data\\createUsers.ts; node init_data\\createCommunity.ts; node init_data\\createPosts.ts",
+    "seed": "node init_data\\seed.ts",
     "dev": "vite dev --port 3000",
     "host": "vite --host --port 3030",
     "build": "vite build",
