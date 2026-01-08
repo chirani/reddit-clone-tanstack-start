@@ -1,5 +1,6 @@
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { ArrowDown01 } from "lucide-react";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import Post from "@/components/Post";
@@ -41,8 +42,63 @@ function App() {
 
 	return (
 		<main className="main flex flex-col items-stretch">
+			<div className="flex flex-row-reverse">
+				<TopPostsDropDown />
+			</div>
 			{posts?.length && posts.map((post) => <Post key={post.id} {...post} showCommunity />)}
 			<div className="p-4" ref={inViewRef} hidden={!hasNextPage || isFetching} />
 		</main>
 	);
 }
+
+const TopPostsDropDown = () => {
+	return (
+		<details className="dropdown dropdown-hover dropdown-end">
+			<summary className="btn btn-ghost m-1">
+				Top Posts <ArrowDown01 className="text-primary" />
+			</summary>
+			<ul className="menu dropdown-content bg-base-100 rounded-box z-1 mt-1 w-40 p-2 shadow-sm gap-2.5">
+				<li>
+					<button
+						disabled={false}
+						type="button"
+						className="btn btn-sm btn-ghost"
+						onClick={() => {}}
+					>
+						Today
+					</button>
+				</li>
+				<li>
+					<button
+						disabled={false}
+						type="button"
+						className="btn btn-sm btn-ghost"
+						onClick={() => {}}
+					>
+						Last 7 Days
+					</button>
+				</li>
+				<li>
+					<button
+						disabled={false}
+						type="button"
+						className="btn btn-sm btn-ghost"
+						onClick={() => {}}
+					>
+						Last 30 Days
+					</button>
+				</li>
+				<li>
+					<button
+						disabled={false}
+						type="button"
+						className="btn btn-sm btn-ghost"
+						onClick={() => {}}
+					>
+						Last 365 Days
+					</button>
+				</li>
+			</ul>
+		</details>
+	);
+};
