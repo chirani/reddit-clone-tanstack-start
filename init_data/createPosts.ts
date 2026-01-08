@@ -1,4 +1,5 @@
 import * as fs from "node:fs/promises";
+import { faker } from "@faker-js/faker";
 import { isNull } from "drizzle-orm";
 import { db } from "../src/db/index.ts";
 import { communities, communityMemberships, generateSlug, posts, user } from "../src/db/schema.ts";
@@ -35,9 +36,11 @@ export const createPosts = async () => {
 	const postsList: postType[] = postFormatted.map((pf) => {
 		const randomUser = Math.floor(Math.random() * userNumber);
 		const randomCommunity = Math.floor(Math.random() * communityNumber);
+		const createdAt = faker.date.past({ years: 4 });
 
 		return {
 			...pf,
+			createdAt,
 			userId: createdUsers[randomUser].id,
 			communityId: createCommunities[randomCommunity].id,
 		};
