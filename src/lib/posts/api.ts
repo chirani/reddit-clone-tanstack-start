@@ -75,7 +75,7 @@ function getDateCutoff(period: TopPostPeriod): Date {
 	return now;
 }
 
-export const fetchTopPostsPaginatedServer = createServerFn()
+export const fetchTopPostsPaginated = createServerFn()
 	.inputValidator(
 		z.object({
 			limit: z.number().default(10),

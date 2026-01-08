@@ -3,7 +3,7 @@ import {
 	createPostServer,
 	fetchPostByCommunityServer,
 	fetchPostBySlugServer,
-	fetchTopPostsPaginatedServer,
+	fetchTopPostsPaginated,
 	type TopPostPeriod,
 } from "./api";
 
@@ -22,7 +22,7 @@ export const fetchPostsPagintedQueryOptions = (period: TopPostPeriod = "30d") =>
 		initialPageParam: 0,
 		queryKey: ["fetch-posts-paginated"],
 		queryFn: async ({ pageParam }) => {
-			const results = await fetchTopPostsPaginatedServer({
+			const results = await fetchTopPostsPaginated({
 				data: { offset: pageParam, period, limit: 6 },
 			});
 			return results;
