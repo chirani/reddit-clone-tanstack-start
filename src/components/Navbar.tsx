@@ -44,7 +44,7 @@ const DesktopRightMenu: React.FC<RightMenuProps> = ({
 		<div className="hidden md:flex navbar-end gap-3">
 			{isAuthenticated && (
 				<>
-					<Link to="/post/create">
+					<Link to="/post/create" search={{ communityId: "" }}>
 						<button type="button" className="btn btn-primary w-full">
 							Create A Post
 						</button>
@@ -109,7 +109,7 @@ const MobileRightMenu: React.FC<RightMenuProps> = ({
 		<div className="flex md:hidden navbar-end gap-0 sm:gap-3">
 			{isAuthenticated && (
 				<>
-					<Link to="/post/create">
+					<Link to="/post/create" search={{ communityId: "" }}>
 						<button type="button" className="btn btn-primary">
 							<PlusCircleIcon />
 						</button>

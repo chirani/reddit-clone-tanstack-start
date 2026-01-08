@@ -3,7 +3,8 @@ import {
 	createPostServer,
 	fetchPostByCommunityServer,
 	fetchPostBySlugServer,
-	fetchPostsPaginatedServer,
+	fetchTopPostsPaginatedServer,
+	type TopPostPeriod,
 } from "./api";
 
 export const useCreatePost = () => {
@@ -16,12 +17,14 @@ export const useCreatePost = () => {
 	});
 };
 
-export const fetchPostsPagintedQueryOptions = () =>
+export const fetchPostsPagintedQueryOptions = (period: TopPostPeriod = "30d") =>
 	infiniteQueryOptions({
 		initialPageParam: 0,
 		queryKey: ["fetch-posts-paginated"],
 		queryFn: async ({ pageParam }) => {
-			const results = await fetchPostsPaginatedServer({ data: { offset: pageParam, limit: 6 } });
+			const results = await fetchTopPostsPaginatedServer({
+				data: { offset: pageParam, period, limit: 6 },
+			});
 			return results;
 		},
 		getNextPageParam: (lastPage) => lastPage.nextOffset,

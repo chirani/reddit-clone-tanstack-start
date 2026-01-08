@@ -1,6 +1,6 @@
 import { notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { desc, eq, or, sql } from "drizzle-orm";
+import { and, desc, eq, gte, or, sql } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
 import { comments, generateSlug, likes, posts, user } from "@/db/schema";
@@ -52,6 +52,76 @@ export const fetchPostsServer = createServerFn()
 		return results;
 	});
 
+export type TopPostPeriod = "1d" | "7d" | "30d" | "365d";
+
+function getDateCutoff(period: TopPostPeriod): Date {
+	const now = new Date();
+
+	switch (period) {
+		case "1d":
+			now.setDate(now.getDate() - 1);
+			break;
+		case "7d":
+			now.setDate(now.getDate() - 7);
+			break;
+		case "30d":
+			now.setDate(now.getDate() - 30);
+			break;
+		case "365d":
+			now.setDate(now.getDate() - 365);
+			break;
+	}
+
+	return now;
+}
+
+export const fetchTopPostsPaginatedServer = createServerFn()
+	.inputValidator(
+		z.object({
+			limit: z.number().default(10),
+			offset: z.number().default(0),
+			period: z.enum(["1d", "7d", "30d", "365d"]).default("365d"),
+		}),
+	)
+	.middleware([userAuthMiddleware])
+	.handler(async ({ context, data }) => {
+		const userId = context.user.id;
+		const { limit, offset } = data;
+		const cutoffDate = getDateCutoff(data.period);
+
+		const results = await db
+			.select({
+				id: posts.id,
+				title: posts.title,
+				body: posts.body,
+				slug: posts.slug,
+				username: user.name,
+				communityId: posts.communityId,
+				createdAt: posts.createdAt,
+				likeCount: posts.likeCount,
+				recentLikes: sql<number>`COUNT(${likes.postId})`.as("recent_likes"),
+				likedByUser: sql<boolean>`BOOL_OR(${eq(likes.userId, userId)})`,
+				commentCount: posts.commentCount,
+			})
+			.from(posts)
+			.leftJoin(user, eq(posts.userId, user.id))
+			.leftJoin(likes, eq(likes.postId, posts.id))
+			.where(and(gte(likes.createdAt, cutoffDate), gte(posts.createdAt, cutoffDate)))
+			.groupBy(posts.id, user.name)
+			.orderBy(desc(sql`recent_likes`))
+			.offset(offset)
+			.limit(limit);
+
+		const filteredResults = results.filter((item) => {
+			return item.username !== null && item.communityId !== null;
+		});
+
+		return {
+			results: filteredResults,
+			nextOffset: results.length === limit ? offset + limit : null,
+		};
+	});
+
 export const fetchPostsPaginatedServer = createServerFn()
 	.inputValidator(
 		z.object({
@@ -81,8 +151,7 @@ export const fetchPostsPaginatedServer = createServerFn()
 			.leftJoin(user, eq(posts.userId, user.id))
 			.leftJoin(likes, eq(posts.id, likes.postId))
 			.groupBy(posts.id, user.name)
-			.orderBy(posts.id)
-			//	.orderBy(desc(posts.createdAt))
+			.orderBy(desc(posts.createdAt))
 			.offset(offset)
 			.limit(limit);
 
