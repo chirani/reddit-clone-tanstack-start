@@ -1,6 +1,6 @@
 import { notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
-import { and, desc, eq, gte, or, sql } from "drizzle-orm";
+import { desc, eq, or, sql } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
 import { comments, generateSlug, likes, posts, user } from "@/db/schema";
@@ -93,22 +93,25 @@ export const fetchTopPostsPaginatedServer = createServerFn()
 			.select({
 				id: posts.id,
 				title: posts.title,
-				body: posts.body,
 				slug: posts.slug,
-				username: user.name,
+				body: posts.body,
 				communityId: posts.communityId,
+				username: user.name,
 				createdAt: posts.createdAt,
-				likeCount: posts.likeCount,
-				recentLikes: sql<number>`COUNT(${likes.postId})`.as("recent_likes"),
-				likedByUser: sql<boolean>`BOOL_OR(${eq(likes.userId, userId)})`,
 				commentCount: posts.commentCount,
+				likeCount: posts.likeCount,
+				likedByUser: sql<boolean>`BOOL_OR(${eq(likes.userId, userId)})`,
+				recentLikeCount: sql<number>`COUNT(${likes.postId})`.as("recent_like_count"),
 			})
 			.from(posts)
-			.leftJoin(user, eq(posts.userId, user.id))
-			.leftJoin(likes, eq(likes.postId, posts.id))
-			.where(and(gte(likes.createdAt, cutoffDate), gte(posts.createdAt, cutoffDate)))
+			.leftJoin(
+				likes,
+				sql`${likes.postId} = ${posts.id}
+         		AND ${likes.createdAt} >= ${cutoffDate}`,
+			)
+			.leftJoin(user, eq(user.id, posts.userId))
 			.groupBy(posts.id, user.name)
-			.orderBy(desc(sql`recent_likes`))
+			.orderBy(desc(sql`recent_like_count`), desc(posts.id))
 			.offset(offset)
 			.limit(limit);
 
