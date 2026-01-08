@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import z from "zod";
 import Post from "@/components/Post";
+import type { TopPostPeriod } from "@/lib/posts/api";
 import { fetchPostsPagintedQueryOptions } from "@/lib/posts/hooks";
 
 const createCommunitySearchSchema = z.object({
@@ -54,7 +55,7 @@ function App() {
 	return (
 		<main className="main flex flex-col items-stretch">
 			<div className="flex flex-row-reverse px-3">
-				<TopPostsDropDown />
+				<TopPostsDropDown period={deps.top} />
 			</div>
 
 			{posts?.length && posts.map((post) => <Post key={post.id} {...post} showCommunity />)}
@@ -63,11 +64,18 @@ function App() {
 	);
 }
 
-const TopPostsDropDown = () => {
+const topPeriod: Record<TopPostPeriod, string> = {
+	"1d": "Today",
+	"7d": "This Week",
+	"30d": "This Month",
+	"365d": "This Year",
+};
+
+const TopPostsDropDown = ({ period }: { period: TopPostPeriod }) => {
 	return (
 		<details className="dropdown dropdown-hover dropdown-end">
 			<summary className="btn btn-ghost m-1">
-				Top Posts <ArrowDown01 className="text-primary" />
+				Top Posts <ArrowDown01 className="text-primary" /> {topPeriod[period]}
 			</summary>
 			<ul className="menu dropdown-content bg-base-100 rounded-box z-1 mt-1 p-2 shadow-sm gap-2.5">
 				<li>
