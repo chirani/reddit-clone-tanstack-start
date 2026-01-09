@@ -10,14 +10,14 @@ export const Route = createFileRoute("/signin")({
 		const { userSession } = context;
 
 		if (userSession) {
-			throw redirect({ to: "/" });
+			throw redirect({ to: "/", search: { top: "7d" } });
 		}
 	},
 });
 
 const loginSchema = z.object({
 	email: z.email(),
-	password: z.string().min(8, " password must be 8 characters or longer"),
+	password: z.string().min(8, "password must be 8 characters or longer"),
 });
 
 function RouteComponent() {

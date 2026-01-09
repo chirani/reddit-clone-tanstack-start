@@ -11,7 +11,13 @@ const Navbar: React.FC = () => {
 	return (
 		<nav className="navbar bg-base-100 shadow-sm sticky top-0 z-400">
 			<div className="navbar-start">
-				<Link type="button" className="btn btn-ghost" to="/" viewTransition={true}>
+				<Link
+					type="button"
+					className="btn btn-ghost"
+					to="/"
+					search={{ top: "7d" }}
+					viewTransition={true}
+				>
 					<img src="/community.svg" alt="Icon" width="100" />
 				</Link>
 			</div>
