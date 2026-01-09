@@ -227,7 +227,7 @@ export const fetchPostBySlugServer = createServerFn()
 		return results;
 	});
 
-export const fetchPostByCommunityServer = createServerFn()
+export const fetchTopPostByCommunity = createServerFn()
 	.middleware([userAuthMiddleware])
 	.inputValidator(
 		z.object({
@@ -260,6 +260,54 @@ export const fetchPostByCommunityServer = createServerFn()
 			.where(eq(posts.communityId, communityId))
 			.limit(limit)
 			.offset(offset);
+
+		return {
+			results,
+			nextOffset: results.length === limit ? offset + limit : null,
+		};
+	});
+
+export const fetchPostByCommunityServer = createServerFn()
+	.middleware([userAuthMiddleware])
+	.inputValidator(
+		z.object({
+			communityId: z.string(),
+			limit: z.number().default(10),
+			offset: z.number().default(0),
+			period: z.enum(["1d", "7d", "30d", "365d"]).default("365d"),
+		}),
+	)
+	.handler(async ({ data, context }) => {
+		const userId = context.user.id;
+		const { limit, offset, communityId, period } = data;
+		const cutoffDate = getDateCutoff(period);
+
+		const results = await db
+			.select({
+				id: posts.id,
+				title: posts.title,
+				slug: posts.slug,
+				body: posts.body,
+				communityId: posts.communityId,
+				username: user.name,
+				createdAt: posts.createdAt,
+				commentCount: posts.commentCount,
+				likeCount: posts.likeCount,
+				likedByUser: sql<boolean>`BOOL_OR(${eq(likes.userId, userId)})`,
+				recentLikeCount: sql<number>`COUNT(${likes.postId})`.as("recent_like_count"),
+			})
+			.from(posts)
+			.leftJoin(
+				likes,
+				sql`${likes.postId} = ${posts.id}
+         		AND ${likes.createdAt} >= ${cutoffDate}`,
+			)
+			.leftJoin(user, eq(user.id, posts.userId))
+			.groupBy(posts.id, user.name)
+			.where(eq(posts.communityId, communityId))
+			.orderBy(desc(sql`recent_like_count`), desc(posts.id))
+			.offset(offset)
+			.limit(limit);
 
 		return {
 			results,

@@ -64,7 +64,7 @@ function App() {
 	);
 }
 
-const topPeriod: Record<TopPostPeriod, string> = {
+export const topPeriod: Record<TopPostPeriod, string> = {
 	"1d": "Today",
 	"7d": "This Week",
 	"30d": "This Month",

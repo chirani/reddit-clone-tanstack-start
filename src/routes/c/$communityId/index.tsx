@@ -1,19 +1,29 @@
 import { useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowDown01 } from "lucide-react";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
+import z from "zod";
 import Post from "@/components/Post";
 import {
 	fetchCommunityMetadataOpts,
 	useJoinCommunity,
 	useLeaveCommunity,
 } from "@/lib/community/hooks";
+import type { TopPostPeriod } from "@/lib/posts/api";
 import { fetchPostsByCommunityPagintedQueryOptions } from "@/lib/posts/hooks";
+import { topPeriod } from "@/routes";
+
+const createCommunitySearchSchema = z.object({
+	top: z.enum(["1d", "7d", "30d", "365d"]).catch("7d"),
+});
 
 export const Route = createFileRoute("/c/$communityId/")({
-	loader: async ({ context, params }) => {
+	validateSearch: (search) => createCommunitySearchSchema.parse(search),
+	loaderDeps: ({ search: { top } }) => ({ top }),
+	loader: async ({ context, params, deps }) => {
 		await context.queryClient.ensureInfiniteQueryData(
-			fetchPostsByCommunityPagintedQueryOptions(params.communityId),
+			fetchPostsByCommunityPagintedQueryOptions(params.communityId, deps.top),
 		);
 		const communityMetaData = await context.queryClient.ensureQueryData(
 			fetchCommunityMetadataOpts(params.communityId),
@@ -34,9 +44,10 @@ export const Route = createFileRoute("/c/$communityId/")({
 
 function RouteComponent() {
 	const { communityId } = Route.useParams();
+	const { top } = Route.useSearch();
 	const { data: communityData } = useSuspenseQuery(fetchCommunityMetadataOpts(communityId));
 	const { data, fetchNextPage, isFetching, hasNextPage } = useSuspenseInfiniteQuery(
-		fetchPostsByCommunityPagintedQueryOptions(communityId),
+		fetchPostsByCommunityPagintedQueryOptions(communityId, top),
 	);
 	const { mutate: joinCommunity, isPending: isJoinPending } = useJoinCommunity();
 	const { mutate: leaveCommunity, isPending: isLeavePending } = useLeaveCommunity();
@@ -80,6 +91,9 @@ function RouteComponent() {
 				</div>
 			</div>
 			<section>
+				<div className="flex flex-row-reverse px-3">
+					<TopPostsDropDown communityId={communityId} period={top} />
+				</div>
 				{posts.map((post) => (
 					<Post key={post.id} {...post} likeLocation="community-page" showUsername />
 				))}
@@ -88,3 +102,65 @@ function RouteComponent() {
 		</div>
 	);
 }
+
+const TopPostsDropDown = ({
+	period,
+	communityId,
+}: {
+	period: TopPostPeriod;
+	communityId: string;
+}) => {
+	return (
+		<details className="dropdown dropdown-hover dropdown-end">
+			<summary className="btn btn-ghost m-1">
+				Top Posts <ArrowDown01 className="text-primary" /> {topPeriod[period]}
+			</summary>
+			<ul className="menu dropdown-content bg-base-100 rounded-box z-1 mt-1 p-2 shadow-sm gap-2.5">
+				<li>
+					<Link
+						to="/c/$communityId"
+						params={{ communityId }}
+						search={{ top: "1d" }}
+						className="btn btn-sm btn-ghost"
+						reloadDocument
+					>
+						Today
+					</Link>
+				</li>
+				<li>
+					<Link
+						to="/c/$communityId"
+						params={{ communityId }}
+						search={{ top: "7d" }}
+						className="btn btn-sm btn-ghost"
+						reloadDocument
+					>
+						Last 7 Days
+					</Link>
+				</li>
+				<li>
+					<Link
+						to="/c/$communityId"
+						params={{ communityId }}
+						search={{ top: "30d" }}
+						className="btn btn-sm btn-ghost"
+						reloadDocument
+					>
+						Last 30 days
+					</Link>
+				</li>
+				<li>
+					<Link
+						to="/c/$communityId"
+						params={{ communityId }}
+						search={{ top: "365d" }}
+						className="btn btn-sm btn-ghost"
+						reloadDocument
+					>
+						Last 365 days
+					</Link>
+				</li>
+			</ul>
+		</details>
+	);
+};

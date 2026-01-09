@@ -31,13 +31,16 @@ export const fetchPostsPagintedQueryOptions = (period: TopPostPeriod = "30d") =>
 		staleTime: 600_000,
 	});
 
-export const fetchPostsByCommunityPagintedQueryOptions = (communityId: string) =>
+export const fetchPostsByCommunityPagintedQueryOptions = (
+	communityId: string,
+	period: TopPostPeriod,
+) =>
 	infiniteQueryOptions({
 		initialPageParam: 0,
 		queryKey: ["fetch-posts-community-paginated", communityId],
 		queryFn: async ({ pageParam }) => {
 			const results = await fetchPostByCommunityServer({
-				data: { offset: pageParam, limit: 3, communityId },
+				data: { offset: pageParam, limit: 3, communityId, period },
 			});
 			return results;
 		},
