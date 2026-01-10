@@ -18,6 +18,8 @@ const TopPostsDropDown = ({
 	href: "/" | "/c/$communityId";
 	communityId?: string | null;
 }) => {
+	const params = communityId ? { communityId } : {};
+
 	return (
 		<details className="dropdown dropdown-hover dropdown-end">
 			<summary className="btn btn-ghost m-1">
@@ -27,7 +29,7 @@ const TopPostsDropDown = ({
 				<li>
 					<Link
 						to={href}
-						params={communityId ? { communityId } : {}}
+						params={params}
 						search={{ top: "1d" }}
 						className="btn btn-sm btn-ghost"
 						reloadDocument
@@ -38,7 +40,7 @@ const TopPostsDropDown = ({
 				<li>
 					<Link
 						to={href}
-						params={communityId ? { communityId } : {}}
+						params={params}
 						search={{ top: "7d" }}
 						className="btn btn-sm btn-ghost"
 						reloadDocument
@@ -49,7 +51,7 @@ const TopPostsDropDown = ({
 				<li>
 					<Link
 						to={href}
-						params={communityId ? { communityId } : {}}
+						params={params}
 						search={{ top: "30d" }}
 						className="btn btn-sm btn-ghost"
 						reloadDocument
@@ -60,7 +62,7 @@ const TopPostsDropDown = ({
 				<li>
 					<Link
 						to={href}
-						params={communityId ? { communityId } : {}}
+						params={params}
 						search={{ top: "365d" }}
 						className="btn btn-sm btn-ghost"
 						reloadDocument
