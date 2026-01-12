@@ -102,3 +102,18 @@ export const communityMemberships = pgTable("community_memberships", {
 		.notNull(),
 	...timestamps,
 });
+
+export const notificationType = pgEnum("notification_type", ["post_like", "post_comment"]);
+export const userNotifications = pgTable("user_notifications", {
+	id: text("id").default(sql`gen_random_uuid()`).primaryKey(),
+	forUserId: text("for_user_id")
+		.references(() => user.id)
+		.notNull(),
+	byUserId: text("for_user_id")
+		.references(() => user.id)
+		.notNull(),
+	postId: text("post_id").references(() => posts.id),
+	seenAt: timestamp("seen_at"),
+	...timestamp,
+	notificationType: notificationType().default("post_like").notNull(),
+});
