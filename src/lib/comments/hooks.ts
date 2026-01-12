@@ -4,6 +4,7 @@ import {
 	useMutation,
 	useQueryClient,
 } from "@tanstack/react-query";
+import { useCreateNotification } from "../notifications/hooks";
 import type {
 	fetchPostByCommunityServer,
 	fetchPostBySlugServer,
@@ -13,6 +14,8 @@ import { deleteComment, fetchPostComments, postComment } from "./api";
 
 export const usePostComment = () => {
 	const { updateCommentCountClient, onCommentFail } = useUpdateCommentCount();
+	const { mutate: createNotifications } = useCreateNotification();
+
 	return useMutation({
 		mutationKey: ["post-comment"],
 		mutationFn: async ({ postId, comment }: { postId: string; comment: string; slug?: string }) =>
@@ -21,8 +24,11 @@ export const usePostComment = () => {
 			updateCommentCountClient(postId, "post-page");
 		},
 
-		onSuccess: (_data, _params, _onMutateResult, context) => {
-			context.client.invalidateQueries({ queryKey: ["fetch-comments"] });
+		onSuccess: (_data, variables, _onMutateResult, context) => {
+			const { postId } = variables;
+
+			context.client.invalidateQueries({ queryKey: ["fetch-comments", postId] });
+			createNotifications({ notificationType: "post_like", postId });
 		},
 		onError(_error, { postId }) {
 			onCommentFail(postId, "post-page");
