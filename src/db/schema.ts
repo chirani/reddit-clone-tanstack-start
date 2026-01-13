@@ -109,11 +109,11 @@ export const userNotifications = pgTable("user_notifications", {
 	forUserId: text("for_user_id")
 		.references(() => user.id)
 		.notNull(),
-	byUserId: text("for_user_id")
+	byUserId: text("by_user_id")
 		.references(() => user.id)
 		.notNull(),
 	postId: text("post_id").references(() => posts.id),
 	seenAt: timestamp("seen_at"),
 	notificationType: notificationType().default("post_like").notNull(),
-	...timestamp,
+	...timestamps,
 });

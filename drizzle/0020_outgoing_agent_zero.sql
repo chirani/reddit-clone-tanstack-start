@@ -1,0 +1,2 @@
+ALTER TABLE "user_notifications" ADD COLUMN "by_user_id" text NOT NULL;--> statement-breakpoint
+ALTER TABLE "user_notifications" ADD CONSTRAINT "user_notifications_by_user_id_user_id_fk" FOREIGN KEY ("by_user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;
