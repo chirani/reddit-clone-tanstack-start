@@ -18,7 +18,7 @@ const Navbar: React.FC = () => {
 					search={{ top: "7d" }}
 					viewTransition={true}
 				>
-					<img src="/community.svg" alt="Icon" width="100" />
+					<img src="/logo_full.svg" alt="Icon" width="100" />
 				</Link>
 			</div>
 			<DesktopRightMenu
