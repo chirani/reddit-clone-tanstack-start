@@ -18,15 +18,15 @@ export const createUserNotifications = createServerFn({ method: "POST" })
 		const { user } = context;
 		const post = await db.select().from(posts).where(eq(posts.id, postId)).limit(1);
 
-		if (post.length) {
+		if (!post.length) {
 			throw Error("Post Not Enough");
 		}
-
+		const forUserId = post[0].userId ?? "null";
 		const results = await db
 			.insert(userNotifications)
 			.values({
 				byUserId: user.id,
-				forUserId: post[0].userId ?? "",
+				forUserId,
 				notificationType,
 				postId,
 			})

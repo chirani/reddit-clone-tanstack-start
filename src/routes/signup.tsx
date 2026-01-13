@@ -49,13 +49,7 @@ export default function Signup() {
 					{errors?.name?.message && (
 						<div className="text-error py-3 px-1">{errors.name.message}</div>
 					)}
-					<input
-						type="email"
-						{...register("email")}
-						placeholder="Email"
-						className="input"
-						required
-					/>
+					<input type="email" {...register("email")} placeholder="Email" className="input" />
 					{errors?.email?.message && (
 						<div className="text-error py-3 px-1">{errors.email.message}</div>
 					)}
@@ -64,7 +58,6 @@ export default function Signup() {
 						{...register("password")}
 						placeholder="Password"
 						className="input"
-						required
 					/>
 					{errors?.password?.message && (
 						<div className="text-error py-3 px-1">{errors.password.message}</div>
