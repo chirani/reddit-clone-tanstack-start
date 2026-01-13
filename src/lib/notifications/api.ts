@@ -19,7 +19,7 @@ export const createUserNotifications = createServerFn({ method: "POST" })
 		const post = await db.select().from(posts).where(eq(posts.id, postId)).limit(1);
 
 		if (!post.length) {
-			throw Error("Post Not Enough");
+			throw Error("Post Doesn't Exist");
 		}
 		const forUserId = post[0].userId ?? "null";
 		const results = await db
