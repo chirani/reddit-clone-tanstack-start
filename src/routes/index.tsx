@@ -5,7 +5,6 @@ import { useInView } from "react-intersection-observer";
 import z from "zod";
 import Post from "@/components/Post";
 import TopPostsDropDown from "@/components/TopPostDropdown";
-
 import { fetchPostsPagintedQueryOptions } from "@/lib/posts/hooks";
 
 const createCommunitySearchSchema = z.object({
@@ -57,7 +56,6 @@ function App() {
 			<div className="flex flex-row-reverse px-3">
 				<TopPostsDropDown period={deps.top} href="/" />
 			</div>
-
 			{posts?.length && posts.map((post) => <Post key={post.id} {...post} showCommunity />)}
 			<div className="p-4" ref={inViewRef} hidden={!hasNextPage || isFetching} />
 		</main>

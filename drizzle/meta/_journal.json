@@ -155,6 +155,13 @@
       "when": 1768264748447,
       "tag": "0021_wild_bill_hollister",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1768433147542,
+      "tag": "0022_tired_impossible_man",
+      "breakpoints": true
     }
   ]
 }

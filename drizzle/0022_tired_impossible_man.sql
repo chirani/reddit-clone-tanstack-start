@@ -1,0 +1,1 @@
+ALTER TABLE "user_notifications" ALTER COLUMN "post_id" SET NOT NULL;

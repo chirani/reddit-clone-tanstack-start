@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { Bell, Menu, PlusCircleIcon } from "lucide-react";
 import type React from "react";
+import { useId } from "react";
 import { useAuthQuery, useSignOut } from "@/lib/auth/hooks";
+import NotificationList from "./NotificationList";
 
 const Navbar: React.FC = () => {
 	const { data } = useAuthQuery();
@@ -46,6 +48,7 @@ const DesktopRightMenu: React.FC<RightMenuProps> = ({
 	signOut,
 	isSignouPending,
 }) => {
+	const notificationPopover = useId();
 	return (
 		<div className="hidden md:flex navbar-end gap-3">
 			{isAuthenticated && (
@@ -56,7 +59,13 @@ const DesktopRightMenu: React.FC<RightMenuProps> = ({
 						</button>
 					</Link>
 					<div className="indicator">
-						<button className="btn btn-ghost" type="button" title="notification">
+						<button
+							className="btn btn-ghost"
+							type="button"
+							title="notification"
+							popoverTarget={notificationPopover}
+							style={{ anchorName: "--anchor-1" }}
+						>
 							<span className="indicator-item status status-error animate-pulse" />
 							<Bell />
 						</button>
@@ -85,6 +94,14 @@ const DesktopRightMenu: React.FC<RightMenuProps> = ({
 							</li>
 						</ul>
 					</details>
+					<ul
+						className="dropdown dropdown-end menu sm:w-96 bg-transparent"
+						popover="auto"
+						id={notificationPopover}
+						style={{ positionAnchor: "--anchor-1" } as React.CSSProperties}
+					>
+						<NotificationList />
+					</ul>
 				</>
 			)}
 			{!isAuthenticated && (
