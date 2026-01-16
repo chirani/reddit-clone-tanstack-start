@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
-import { and, eq, inArray, isNull } from "drizzle-orm";
+import { and, eq, getTableColumns, inArray, isNull } from "drizzle-orm";
 import z from "zod";
 import { db } from "@/db";
-import { posts, userNotifications } from "@/db/schema";
+import { posts, userNotifications, user as userSchema } from "@/db/schema";
 import { userAuthMiddleware } from "../auth/api";
 
 export const CreateNotificationSchema = z.object({
@@ -38,19 +38,26 @@ export const createUserNotifications = createServerFn({ method: "POST" })
 export const fetchPendingNotifications = createServerFn({ method: "GET" })
 	.inputValidator(
 		z.object({
+			pendingOnly: z.boolean().default(true),
 			offset: z.number().default(0),
 			limit: z.number().default(6),
 		}),
 	)
 	.middleware([userAuthMiddleware])
 	.handler(async ({ context, data }) => {
-		const { limit, offset } = data;
+		const { limit, offset, pendingOnly } = data;
 		const { user } = context;
 
+		const condition = pendingOnly
+			? and(eq(userNotifications.forUserId, user.id), isNull(userNotifications.seenAt))
+			: and(eq(userNotifications.forUserId, user.id));
+
 		const results = await db
-			.select()
+			.select({ ...getTableColumns(userNotifications), byUsername: userSchema.name })
 			.from(userNotifications)
-			.where(and(eq(userNotifications.forUserId, user.id), isNull(userNotifications.seenAt)))
+			.leftJoin(userSchema, eq(userNotifications.byUserId, userSchema.id))
+			.groupBy(userNotifications.id, userSchema.name)
+			.where(condition)
 			.limit(limit)
 			.offset(offset);
 

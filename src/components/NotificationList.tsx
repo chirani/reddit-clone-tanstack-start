@@ -6,21 +6,21 @@ import type { userNotifications } from "@/db/schema";
 import { fetchPaginatedNotificationsOpts, useSetNotificationSeen } from "@/lib/notifications/hooks";
 
 const NotificationList: React.FC = () => {
-	const { data } = useSuspenseInfiniteQuery(fetchPaginatedNotificationsOpts());
+	const { data } = useSuspenseInfiniteQuery(fetchPaginatedNotificationsOpts(true));
 	const notifications = data?.pages.flatMap((p) => p.results) ?? [];
 
 	if (!notifications.length) {
 		return (
-			<ul className="list bg-base-100 gap-3">
+			<ul className="list bg-base-100 gap-3 p-3 shadow">
 				<li className="text-center p-4">No New Notifications</li>
-				<button type="button" className="btn btn-ghost">
+				<Link to="/u/notifications" className="btn btn-ghost">
 					View Old Notifications
-				</button>
+				</Link>
 			</ul>
 		);
 	}
 	return (
-		<ul>
+		<ul className="list bg-base-100 gap-3 p-3 shadow">
 			{notifications.map((notification) => (
 				<li key={notification.id}>
 					<Link to="/post/$postId" params={{ postId: notification.postId }}>
@@ -32,10 +32,15 @@ const NotificationList: React.FC = () => {
 	);
 };
 
-type NotificationProps = typeof userNotifications.$inferSelect;
+type UserNotificationProps = typeof userNotifications.$inferSelect;
+interface NotificationProps {
+	id: string;
+	byUsername: string | null;
+	notificationType: UserNotificationProps["notificationType"];
+}
 
 const Notification: React.FC<NotificationProps> = (props) => {
-	const { mutate: setNotificationSeen, isSuccess } = useSetNotificationSeen();
+	const { mutate: setNotificationSeen } = useSetNotificationSeen();
 	const { ref: inViewRef, inView } = useInView({ threshold: 0, triggerOnce: true });
 
 	useEffect(() => {
@@ -44,11 +49,7 @@ const Notification: React.FC<NotificationProps> = (props) => {
 		}
 	}, [inView, props.id, setNotificationSeen]);
 
-	return (
-		<div ref={inViewRef} className={isSuccess ? "btn btn-disabled" : "btn btn-outline"}>
-			{notificationTextFormatter(props)}
-		</div>
-	);
+	return <p ref={inViewRef}>{notificationTextFormatter(props)}</p>;
 };
 
 export const notificationTextFormatter = (notificationData: NotificationProps) => {
@@ -57,7 +58,7 @@ export const notificationTextFormatter = (notificationData: NotificationProps) =
 			? "liked your post"
 			: "commented on your post";
 
-	return `${notificationData?.byUserId ?? "User"} ${action}`;
+	return `${notificationData?.byUsername ?? "User"} ${action}`;
 };
 
 export default NotificationList;

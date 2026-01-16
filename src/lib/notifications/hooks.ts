@@ -21,10 +21,11 @@ export const useSetNotificationSeen = () => {
 	});
 };
 
-export const fetchPaginatedNotificationsOpts = () =>
+export const fetchPaginatedNotificationsOpts = (pendingOnly?: boolean) =>
 	infiniteQueryOptions({
 		initialPageParam: 0,
 		queryKey: ["fetch-paginated-notifications"],
-		queryFn: ({ pageParam }) => fetchPendingNotifications({ data: { offset: pageParam } }),
+		queryFn: ({ pageParam }) =>
+			fetchPendingNotifications({ data: { offset: pageParam, pendingOnly } }),
 		getNextPageParam: (lastPage) => lastPage.nextOffset,
 	});
