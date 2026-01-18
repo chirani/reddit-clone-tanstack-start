@@ -3,7 +3,7 @@ import type z from "zod";
 import {
 	type CreateNotificationSchema,
 	createUserNotifications,
-	fetchPendingNotifications,
+	fetchPaginatedNotifications,
 	setNotificationAsSeen,
 } from "./api";
 
@@ -21,11 +21,11 @@ export const useSetNotificationSeen = () => {
 	});
 };
 
-export const fetchPaginatedNotificationsOpts = (pendingOnly?: boolean) =>
+export const fetchPaginatedNotificationsOpts = (pendingOnly: boolean = true) =>
 	infiniteQueryOptions({
 		initialPageParam: 0,
-		queryKey: ["fetch-paginated-notifications"],
+		queryKey: ["fetch-paginated-notifications", `${pendingOnly}`],
 		queryFn: ({ pageParam }) =>
-			fetchPendingNotifications({ data: { offset: pageParam, pendingOnly } }),
+			fetchPaginatedNotifications({ data: { offset: pageParam, pendingOnly } }),
 		getNextPageParam: (lastPage) => lastPage.nextOffset,
 	});

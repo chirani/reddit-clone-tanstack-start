@@ -76,7 +76,7 @@ const DesktopRightMenu: React.FC<RightMenuProps> = ({
 						type="button"
 						title="menu"
 						popoverTarget={menuPopover}
-						style={{ anchorName: "--anchor-1" }}
+						style={{ anchorName: "--anchor-2" }}
 					>
 						<Menu className="text-primary" />
 					</button>
@@ -92,7 +92,7 @@ const DesktopRightMenu: React.FC<RightMenuProps> = ({
 						className="dropdown dropdown-end menu sm:w-64 bg-base-100 flex flex-col gap-3 p-3 shadow"
 						popover="auto"
 						id={menuPopover}
-						style={{ positionAnchor: "--anchor-1" } as React.CSSProperties}
+						style={{ positionAnchor: "--anchor-2" } as React.CSSProperties}
 					>
 						<li>
 							<Link to="/community/create" className="btn btn-sm btn-ghost">

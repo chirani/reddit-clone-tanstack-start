@@ -35,7 +35,7 @@ export const createUserNotifications = createServerFn({ method: "POST" })
 		return results;
 	});
 
-export const fetchPendingNotifications = createServerFn({ method: "GET" })
+export const fetchPaginatedNotifications = createServerFn({ method: "GET" })
 	.inputValidator(
 		z.object({
 			pendingOnly: z.boolean().default(true),
