@@ -23,7 +23,8 @@ const TopPostsDropDown = ({
 	return (
 		<details className="dropdown dropdown-hover dropdown-end">
 			<summary className="btn btn-ghost m-1">
-				Top Posts <ArrowDown01 className="text-primary" /> {topPeriod[period]}
+				<span className="hidden sm:inline">Top Posts</span>
+				<ArrowDown01 className="text-primary" /> {topPeriod[period]}
 			</summary>
 			<ul className="menu dropdown-content bg-base-100 rounded-box z-1 mt-1 p-2 shadow-sm gap-2.5">
 				<li>

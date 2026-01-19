@@ -3,12 +3,14 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import z from "zod";
+import NewFirst from "@/components/NewFirst";
 import Post from "@/components/Post";
 import TopPostsDropDown from "@/components/TopPostDropdown";
 import { fetchPostsPagintedQueryOptions } from "@/lib/posts/hooks";
 
 const createCommunitySearchSchema = z.object({
 	top: z.enum(["1d", "7d", "30d", "365d"]).catch("7d"),
+	is_new: z.boolean().catch(false),
 });
 
 export const Route = createFileRoute("/")({
@@ -19,9 +21,9 @@ export const Route = createFileRoute("/")({
 			throw redirect({ to: "/signup" });
 		}
 	},
-	loaderDeps: ({ search: { top } }) => ({ top }),
-	loader: async ({ context, deps }) => {
-		await context.queryClient.ensureInfiniteQueryData(fetchPostsPagintedQueryOptions(deps.top));
+	loaderDeps: ({ search: { top, is_new } }) => ({ top, is_new }),
+	loader: async ({ context, deps: { top, is_new } }) => {
+		await context.queryClient.ensureInfiniteQueryData(fetchPostsPagintedQueryOptions(top, is_new));
 	},
 	head: () => ({
 		meta: [
@@ -37,7 +39,7 @@ function App() {
 	const { ref: inViewRef, inView } = useInView({ threshold: 0 });
 
 	const { data, fetchNextPage, isFetching, hasNextPage } = useSuspenseInfiniteQuery(
-		fetchPostsPagintedQueryOptions(deps.top),
+		fetchPostsPagintedQueryOptions(deps.top, true),
 	);
 
 	useEffect(() => {
@@ -53,8 +55,9 @@ function App() {
 
 	return (
 		<main className="main flex flex-col items-stretch">
-			<div className="flex flex-row-reverse px-3">
+			<div className="flex flex-row-reverse gap-3 px-3">
 				<TopPostsDropDown period={deps.top} href="/" />
+				<NewFirst isNew={!!deps.is_new} href="/" />
 			</div>
 			{posts?.length && posts.map((post) => <Post key={post.id} {...post} showCommunity />)}
 			<div className="p-4" ref={inViewRef} hidden={!hasNextPage || isFetching} />

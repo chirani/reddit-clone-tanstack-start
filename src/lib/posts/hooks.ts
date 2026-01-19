@@ -17,13 +17,13 @@ export const useCreatePost = () => {
 	});
 };
 
-export const fetchPostsPagintedQueryOptions = (period: TopPostPeriod = "30d") =>
+export const fetchPostsPagintedQueryOptions = (top: TopPostPeriod = "30d", isNew?: boolean) =>
 	infiniteQueryOptions({
 		initialPageParam: 0,
 		queryKey: ["fetch-posts-paginated"],
 		queryFn: async ({ pageParam }) => {
 			const results = await fetchTopPostsPaginated({
-				data: { offset: pageParam, period, limit: 6 },
+				data: { offset: pageParam, top, isNew, limit: 6 },
 			});
 			return results;
 		},

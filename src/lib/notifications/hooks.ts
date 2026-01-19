@@ -12,6 +12,9 @@ export const useCreateNotification = () =>
 		mutationKey: ["create-notifications"],
 		mutationFn: (data: z.infer<typeof CreateNotificationSchema>) =>
 			createUserNotifications({ data }),
+		onSuccess(_data, _variables, _onMutateResult, context) {
+			context.client.invalidateQueries({ queryKey: ["fetch-paginated-notifications"] });
+		},
 	});
 
 export const useSetNotificationSeen = () => {

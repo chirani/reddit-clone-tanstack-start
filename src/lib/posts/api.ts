@@ -80,14 +80,17 @@ export const fetchTopPostsPaginated = createServerFn()
 		z.object({
 			limit: z.number().default(10),
 			offset: z.number().default(0),
-			period: z.enum(["1d", "7d", "30d", "365d"]).default("365d"),
+			top: z.enum(["1d", "7d", "30d", "365d"]).default("365d"),
+			isNew: z.boolean().default(false),
 		}),
 	)
 	.middleware([userAuthMiddleware])
 	.handler(async ({ context, data }) => {
 		const userId = context.user.id;
-		const { limit, offset } = data;
-		const cutoffDate = getDateCutoff(data.period);
+		const { limit, offset, isNew } = data;
+
+		const cutoffDate = isNew ? getDateCutoff("365d") : getDateCutoff(data.top);
+		const orderedBy = isNew ? desc(posts.createdAt) : desc(sql`recent_like_count`);
 
 		const results = await db
 			.select({
@@ -111,7 +114,7 @@ export const fetchTopPostsPaginated = createServerFn()
 			)
 			.leftJoin(user, eq(user.id, posts.userId))
 			.groupBy(posts.id, user.name)
-			.orderBy(desc(sql`recent_like_count`), desc(posts.id))
+			.orderBy(orderedBy, desc(posts.id))
 			.offset(offset)
 			.limit(limit);
 
