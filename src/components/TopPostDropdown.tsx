@@ -31,7 +31,7 @@ const TopPostsDropDown = ({
 					<Link
 						to={href}
 						params={params}
-						search={{ top: "1d" }}
+						search={{ top: "1d", is_new: false }}
 						className="btn btn-sm btn-ghost"
 						reloadDocument
 					>
@@ -42,7 +42,7 @@ const TopPostsDropDown = ({
 					<Link
 						to={href}
 						params={params}
-						search={{ top: "7d" }}
+						search={{ top: "7d", is_new: false }}
 						className="btn btn-sm btn-ghost"
 						reloadDocument
 					>
@@ -53,7 +53,7 @@ const TopPostsDropDown = ({
 					<Link
 						to={href}
 						params={params}
-						search={{ top: "30d" }}
+						search={{ top: "30d", is_new: false }}
 						className="btn btn-sm btn-ghost"
 						reloadDocument
 					>
@@ -64,7 +64,7 @@ const TopPostsDropDown = ({
 					<Link
 						to={href}
 						params={params}
-						search={{ top: "365d" }}
+						search={{ top: "365d", is_new: false }}
 						className="btn btn-sm btn-ghost"
 						reloadDocument
 					>

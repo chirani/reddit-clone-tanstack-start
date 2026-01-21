@@ -14,7 +14,7 @@ const NotificationList: React.FC = () => {
 			<ul className="list bg-base-100 gap-3 p-3 shadow">
 				<li className="text-center p-4">No New Notifications</li>
 				<Link to="/u/notifications" className="btn btn-ghost">
-					View Old Notifications
+					View Older Notifications
 				</Link>
 			</ul>
 		);
@@ -28,6 +28,9 @@ const NotificationList: React.FC = () => {
 					</Link>
 				</li>
 			))}
+			<Link to="/u/notifications" className="btn btn-ghost">
+				View Older Notifications
+			</Link>
 		</ul>
 	);
 };

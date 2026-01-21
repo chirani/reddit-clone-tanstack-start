@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 
 interface NewFirstPops {
 	href: "/" | "/c/$communityId";
-	isNew: boolean;
+	isNew?: boolean;
 }
 
 const NewFirst: React.FC<NewFirstPops> = (props) => {
@@ -13,6 +13,7 @@ const NewFirst: React.FC<NewFirstPops> = (props) => {
 			to={href}
 			className={`btn m-1 ${isNew ? "btn-active" : "btn-ghost"}`}
 			search={{ top: "365d", is_new: true }}
+			reloadDocument
 		>
 			New
 		</Link>

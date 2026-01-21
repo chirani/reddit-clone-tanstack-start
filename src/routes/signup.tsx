@@ -10,7 +10,7 @@ export const Route = createFileRoute("/signup")({
 		const { userSession } = context;
 
 		if (userSession?.user) {
-			throw redirect({ to: "/", search: { top: "7d" } });
+			throw redirect({ to: "/", search: { top: "7d", is_new: false } });
 		}
 	},
 });

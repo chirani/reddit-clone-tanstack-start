@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import z from "zod";
+import NewFirst from "@/components/NewFirst";
 import Post from "@/components/Post";
 import TopPostsDropDown from "@/components/TopPostDropdown";
 import {
@@ -14,6 +15,7 @@ import { fetchPostsByCommunityPagintedQueryOptions } from "@/lib/posts/hooks";
 
 const createCommunitySearchSchema = z.object({
 	top: z.enum(["1d", "7d", "30d", "365d"]).catch("7d"),
+	is_new: z.boolean().catch(false),
 });
 
 export const Route = createFileRoute("/c/$communityId/")({
@@ -89,8 +91,9 @@ function RouteComponent() {
 				</div>
 			</div>
 			<section>
-				<div className="flex flex-row-reverse px-3">
+				<div className="flex flex-row-reverse gap-3 px-3">
 					<TopPostsDropDown period={top} href="/c/$communityId" />
+					<NewFirst href="/c/$communityId" />
 				</div>
 				{posts.map((post) => (
 					<Post key={post.id} {...post} likeLocation="community-page" showUsername />
