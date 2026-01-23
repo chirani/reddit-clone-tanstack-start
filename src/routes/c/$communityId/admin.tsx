@@ -1,7 +1,8 @@
 import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 import Post from "@/components/Post";
-
 import { fetchPostsByCommunityPagintedQueryOptions } from "@/lib/posts/hooks";
 
 export const Route = createFileRoute("/c/$communityId/admin")({
@@ -11,7 +12,7 @@ export const Route = createFileRoute("/c/$communityId/admin")({
 function RouteComponent() {
 	const { communityId } = Route.useParams();
 
-	const { data } = useSuspenseInfiniteQuery(
+	const { data, isFetching, hasNextPage, fetchNextPage } = useSuspenseInfiniteQuery(
 		fetchPostsByCommunityPagintedQueryOptions(communityId, "365d"),
 	);
 
@@ -20,11 +21,22 @@ function RouteComponent() {
 			p.results.map((result) => ({ ...result, pageNumber: index })),
 		) ?? [];
 
+	const { ref: inViewRef, inView } = useInView({
+		threshold: 0,
+	});
+
+	useEffect(() => {
+		if (!isFetching && inView && hasNextPage) {
+			fetchNextPage();
+		}
+	}, [isFetching, inView, fetchNextPage, hasNextPage]);
+
 	return (
 		<div className="main">
 			{posts.map((post) => (
 				<Post key={post.id} {...post} likeLocation="community-page" showUsername />
 			))}
+			<div className="p-1" ref={inViewRef} />
 		</div>
 	);
 }

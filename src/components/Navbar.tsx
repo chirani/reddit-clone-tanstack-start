@@ -138,6 +138,9 @@ const MobileRightMenu: React.FC<RightMenuProps> = ({
 	signOut,
 	isSignouPending,
 }) => {
+	const notificationPopover = useId();
+	const menuPopover = useId();
+
 	return (
 		<div className="flex md:hidden navbar-end gap-0 sm:gap-3">
 			{isAuthenticated && (
@@ -148,35 +151,58 @@ const MobileRightMenu: React.FC<RightMenuProps> = ({
 						</button>
 					</Link>
 					<div className="indicator">
-						<button className="btn btn-ghost" type="button" title="notification">
+						<button
+							className="btn btn-ghost"
+							type="button"
+							title="notification"
+							style={{ anchorName: "--anchor-1" }}
+							popoverTarget={notificationPopover}
+						>
 							<span className="indicator-item status status-error animate-pulse" />
 							<Bell />
 						</button>
 					</div>
-					<details open={false} className="dropdown dropdown-end">
-						<summary className="btn btn-ghost m-1">
-							<Menu className="text-primary" />
-						</summary>
-						<ul className="menu dropdown-content bg-base-100 rounded-box z-1 mt-1 w-52 p-2 shadow-sm gap-2.5">
-							<li>
-								<Link to="/community/create" className="btn btn-sm btn-ghost">
-									+ Create a Community
-								</Link>
-							</li>
-							<li>
-								<button
-									disabled={isSignouPending}
-									type="button"
-									className="btn btn-sm btn-outline"
-									onClick={() => {
-										signOut();
-									}}
-								>
-									Log out
-								</button>
-							</li>
-						</ul>
-					</details>
+					{/** Menu DropDown */}
+					<button
+						type="button"
+						className="btn btn-ghost m-1"
+						style={{ anchorName: "--anchor-2" }}
+						popoverTarget={menuPopover}
+					>
+						<Menu className="text-primary" />
+					</button>
+					<ul
+						className="dropdown dropdown-end menu bg-transparent"
+						popover="auto"
+						id={notificationPopover}
+						style={{ positionAnchor: "--anchor-1" } as React.CSSProperties}
+					>
+						<NotificationList />
+					</ul>
+					<ul
+						className="dropdown dropdown-end menu w-64 bg-base-100 flex flex-col gap-3 p-3 shadow"
+						popover="auto"
+						id={menuPopover}
+						style={{ positionAnchor: "--anchor-2" } as React.CSSProperties}
+					>
+						<li>
+							<Link to="/community/create" className="btn btn-sm btn-ghost">
+								+ Create a Community
+							</Link>
+						</li>
+						<li>
+							<button
+								disabled={isSignouPending}
+								type="button"
+								className="btn btn-sm btn-outline"
+								onClick={() => {
+									signOut();
+								}}
+							>
+								Log out
+							</button>
+						</li>
+					</ul>
 				</>
 			)}
 			{!isAuthenticated && (
