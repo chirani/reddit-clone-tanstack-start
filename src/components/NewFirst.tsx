@@ -12,7 +12,7 @@ const NewFirst: React.FC<NewFirstPops> = (props) => {
 		<Link
 			to={href}
 			className={`btn m-1 ${isNew ? "btn-active" : "btn-ghost"}`}
-			search={{ top: "365d", is_new: true }}
+			search={{ top: "365d", isNew: true }}
 			reloadDocument
 		>
 			New

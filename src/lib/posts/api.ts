@@ -230,46 +230,6 @@ export const fetchPostBySlugServer = createServerFn()
 		return results;
 	});
 
-export const fetchTopPostByCommunity = createServerFn()
-	.middleware([userAuthMiddleware])
-	.inputValidator(
-		z.object({
-			communityId: z.string(),
-			limit: z.number().default(10),
-			offset: z.number().default(0),
-		}),
-	)
-	.handler(async ({ data, context }) => {
-		const userId = context.user.id;
-		const { limit, offset, communityId } = data;
-
-		const results = await db
-			.select({
-				id: posts.id,
-				title: posts.title,
-				body: posts.body,
-				slug: posts.slug,
-				username: user.name,
-				communityId: posts.communityId,
-				createdAt: posts.createdAt,
-				likedByUser: sql<boolean>`BOOL_OR(${eq(likes.userId, userId)})`,
-				likeCount: posts.likeCount,
-				commentCount: posts.commentCount,
-			})
-			.from(posts)
-			.leftJoin(likes, eq(posts.id, likes.postId))
-			.leftJoin(user, eq(posts.userId, user.id))
-			.groupBy(posts.id, user.name)
-			.where(eq(posts.communityId, communityId))
-			.limit(limit)
-			.offset(offset);
-
-		return {
-			results,
-			nextOffset: results.length === limit ? offset + limit : null,
-		};
-	});
-
 export const fetchPostByCommunityServer = createServerFn()
 	.middleware([userAuthMiddleware])
 	.inputValidator(
@@ -278,12 +238,15 @@ export const fetchPostByCommunityServer = createServerFn()
 			limit: z.number().default(10),
 			offset: z.number().default(0),
 			period: z.enum(["1d", "7d", "30d", "365d"]).default("365d"),
+			isNew: z.boolean().default(false),
 		}),
 	)
 	.handler(async ({ data, context }) => {
 		const userId = context.user.id;
-		const { limit, offset, communityId, period } = data;
-		const cutoffDate = getDateCutoff(period);
+		const { limit, offset, communityId, period, isNew } = data;
+
+		const cutoffDate = isNew ? getDateCutoff("365d") : getDateCutoff(period);
+		const orderedBy = isNew ? desc(posts.createdAt) : desc(sql`recent_like_count`);
 
 		const results = await db
 			.select({
@@ -306,9 +269,9 @@ export const fetchPostByCommunityServer = createServerFn()
          		AND ${likes.createdAt} >= ${cutoffDate}`,
 			)
 			.leftJoin(user, eq(user.id, posts.userId))
-			.groupBy(posts.id, user.name)
 			.where(eq(posts.communityId, communityId))
-			.orderBy(desc(sql`recent_like_count`), desc(posts.id))
+			.groupBy(posts.id, user.name)
+			.orderBy(orderedBy, desc(posts.id))
 			.offset(offset)
 			.limit(limit);
 

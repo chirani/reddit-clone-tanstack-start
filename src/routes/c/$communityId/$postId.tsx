@@ -69,7 +69,7 @@ function RouteComponent() {
 							hidden={!communityId}
 							to="/c/$communityId"
 							params={{ communityId: communityId ?? "" }}
-							search={{ top: "7d", is_new: false }}
+							search={{ top: "7d", isNew: false }}
 						>
 							<Network className="h-4 w-4" />
 							{`c/${communityId}`}

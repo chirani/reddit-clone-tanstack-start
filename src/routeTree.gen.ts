@@ -18,6 +18,7 @@ import { Route as PostCreateRouteImport } from './routes/post/create'
 import { Route as PostPostIdRouteImport } from './routes/post/$postId'
 import { Route as CommunityCreateRouteImport } from './routes/community/create'
 import { Route as CCommunityIdIndexRouteImport } from './routes/c/$communityId/index'
+import { Route as CCommunityIdAdminRouteImport } from './routes/c/$communityId/admin'
 import { Route as CCommunityIdPostIdRouteImport } from './routes/c/$communityId/$postId'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
@@ -66,6 +67,11 @@ const CCommunityIdIndexRoute = CCommunityIdIndexRouteImport.update({
   path: '/c/$communityId/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CCommunityIdAdminRoute = CCommunityIdAdminRouteImport.update({
+  id: '/c/$communityId/admin',
+  path: '/c/$communityId/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CCommunityIdPostIdRoute = CCommunityIdPostIdRouteImport.update({
   id: '/c/$communityId/$postId',
   path: '/c/$communityId/$postId',
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/u/notifications': typeof UNotificationsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/c/$communityId/$postId': typeof CCommunityIdPostIdRoute
+  '/c/$communityId/admin': typeof CCommunityIdAdminRoute
   '/c/$communityId': typeof CCommunityIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/u/notifications': typeof UNotificationsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/c/$communityId/$postId': typeof CCommunityIdPostIdRoute
+  '/c/$communityId/admin': typeof CCommunityIdAdminRoute
   '/c/$communityId': typeof CCommunityIdIndexRoute
 }
 export interface FileRoutesById {
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/u/notifications': typeof UNotificationsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/c/$communityId/$postId': typeof CCommunityIdPostIdRoute
+  '/c/$communityId/admin': typeof CCommunityIdAdminRoute
   '/c/$communityId/': typeof CCommunityIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
     | '/u/notifications'
     | '/api/auth/$'
     | '/c/$communityId/$postId'
+    | '/c/$communityId/admin'
     | '/c/$communityId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/u/notifications'
     | '/api/auth/$'
     | '/c/$communityId/$postId'
+    | '/c/$communityId/admin'
     | '/c/$communityId'
   id:
     | '__root__'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/u/notifications'
     | '/api/auth/$'
     | '/c/$communityId/$postId'
+    | '/c/$communityId/admin'
     | '/c/$communityId/'
   fileRoutesById: FileRoutesById
 }
@@ -170,6 +182,7 @@ export interface RootRouteChildren {
   UNotificationsRoute: typeof UNotificationsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   CCommunityIdPostIdRoute: typeof CCommunityIdPostIdRoute
+  CCommunityIdAdminRoute: typeof CCommunityIdAdminRoute
   CCommunityIdIndexRoute: typeof CCommunityIdIndexRoute
 }
 
@@ -238,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CCommunityIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/c/$communityId/admin': {
+      id: '/c/$communityId/admin'
+      path: '/c/$communityId/admin'
+      fullPath: '/c/$communityId/admin'
+      preLoaderRoute: typeof CCommunityIdAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/c/$communityId/$postId': {
       id: '/c/$communityId/$postId'
       path: '/c/$communityId/$postId'
@@ -266,6 +286,7 @@ const rootRouteChildren: RootRouteChildren = {
   UNotificationsRoute: UNotificationsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   CCommunityIdPostIdRoute: CCommunityIdPostIdRoute,
+  CCommunityIdAdminRoute: CCommunityIdAdminRoute,
   CCommunityIdIndexRoute: CCommunityIdIndexRoute,
 }
 export const routeTree = rootRouteImport

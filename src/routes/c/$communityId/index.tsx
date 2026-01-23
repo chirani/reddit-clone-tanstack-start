@@ -13,17 +13,17 @@ import {
 } from "@/lib/community/hooks";
 import { fetchPostsByCommunityPagintedQueryOptions } from "@/lib/posts/hooks";
 
-const createCommunitySearchSchema = z.object({
+const communitySearchSchema = z.object({
 	top: z.enum(["1d", "7d", "30d", "365d"]).catch("7d"),
-	is_new: z.boolean().catch(false),
+	isNew: z.boolean().catch(false),
 });
 
 export const Route = createFileRoute("/c/$communityId/")({
-	validateSearch: (search) => createCommunitySearchSchema.parse(search),
-	loaderDeps: ({ search: { top } }) => ({ top }),
+	validateSearch: (search) => communitySearchSchema.parse(search),
+	loaderDeps: ({ search: { top, isNew } }) => ({ top, isNew }),
 	loader: async ({ context, params, deps }) => {
 		await context.queryClient.ensureInfiniteQueryData(
-			fetchPostsByCommunityPagintedQueryOptions(params.communityId, deps.top),
+			fetchPostsByCommunityPagintedQueryOptions(params.communityId, deps.top, deps.isNew),
 		);
 		const communityMetaData = await context.queryClient.ensureQueryData(
 			fetchCommunityMetadataOpts(params.communityId),

@@ -17,7 +17,7 @@ const Navbar: React.FC = () => {
 					type="button"
 					className="btn btn-ghost"
 					to="/"
-					search={{ top: "7d", is_new: false }}
+					search={{ top: "7d", isNew: false }}
 					viewTransition={true}
 				>
 					<img src="/logo_full.svg" alt="Icon" width="100" />
